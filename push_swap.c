@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/14 02:02:23 by alistair         ###   ########.fr       */
+/*   Updated: 2022/01/14 20:37:03 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,6 @@
 
 #include <stdio.h>
 #include <unistd.h>
-
-void	push(t_list **head_ref, int new_data)
-{
-	t_list	*new_node;
-
-	new_node = malloc(sizeof(t_list));
-	new_node -> content = new_data;
-	new_node -> next = (*head_ref);
-	(*head_ref) = new_node;
-}
 
 int	count_dup(t_list *head_ref)
 {
@@ -94,29 +84,84 @@ void	print_ll(t_list *head_ref)
 		new_node = new_node->next;
 	}
 }
+/* function prototypes */
+t_list*	SortedMerge(t_list* a, t_list* b);
+void	FrontBackSplit(t_list* source, t_list** frontRef, t_list** backRef);
 
-struct Node* SortedMerge(struct Node* a, struct Node* b)
+/* sorts the linked list by changing next pointers (not data) */
+void	MergeSort(t_list** headRef)
 {
-  struct Node* result = NULL;
- 
-  /* Base cases */
-  if (a == NULL)
-     return(b);
-  else if (b==NULL)
-     return(a);
- 
-  /* Pick either a or b, and recur */
-  if (a->data <= b->data)
-  {
-     result = a;
-     result->next = SortedMerge(a->next, b);
-  }
-  else
-  {
-     result = b;
-     result->next = SortedMerge(a, b->next);
-  }
-  return(result);
+	t_list* head = *headRef;
+	t_list* a;
+	t_list* b;
+
+	/* Base case -- length 0 or 1 */
+	if ((head == NULL) || (head->next == NULL)) {
+		return;
+	}
+
+	/* Split head into 'a' and 'b' sublists */
+	FrontBackSplit(head, &a, &b);
+
+	/* Recursively sort the sublists */
+	MergeSort(&a);
+	MergeSort(&b);
+
+	/* answer = merge the two sorted lists together */
+	*headRef = SortedMerge(a, b);
+}
+
+/* See https:// www.geeksforgeeks.org/?p=3622 for details of this 
+function */
+// takes 2 elements
+t_list*	SortedMerge(t_list* a, t_list* b)
+{
+	t_list* result = NULL;
+
+	/* Base cases */
+	if (a == NULL)
+		return (b);
+	else if (b == NULL)
+		return (a);
+
+	/* Pick either a or b, and recur */
+	if (a->content <= b->content)
+	{
+		result = a;
+		result->next = SortedMerge(a->next, b);
+	}
+	else
+	{
+		result = b;
+		result->next = SortedMerge(a, b->next);
+	}
+	return (result);
+}
+
+/* Split the nodes of the given list into front and back halves,
+	and return the two lists using the reference parameters.
+	If the length is odd, the extra node should go in the front list.
+	Uses the fast/slow pointer strategy. */
+void	FrontBackSplit(t_list* source, t_list** frontRef, t_list** backRef)
+{
+	t_list* fast;
+	t_list* slow;
+
+	slow = source;
+	fast = source -> next;
+	/* Advance 'fast' two nodes, and advance 'slow' one node */
+	while (fast != NULL) {
+		fast = fast -> next;
+		if (fast != NULL) {
+			slow = slow -> next;
+			fast = fast -> next;
+		}
+	}
+	/* 'slow' is before the midpoint in the list, so split it in two
+	at that point. */
+	*frontRef = source;
+	*backRef = slow -> next;
+	slow -> next = NULL;
 }
 
 void delete_list(t_list *head_ref)
@@ -137,7 +182,10 @@ int	main(int argc, char **argv)
 	if (!stack_a)
 		return (return_error());
 	print_ll(*stack_a);
+	MergeSort(stack_a);
 	
+	printf("Sorted:\n");
+	print_ll(*stack_a);
 	delete_list(*stack_a);
 	free(stack_a);
 	return (0);
