@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/15 18:39:56 by alkane           ###   ########.fr       */
+/*   Updated: 2022/01/15 20:15:02 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,17 +107,24 @@ int	main(int argc, char **argv)
 	print_ll(*stack_a, "a");
 	stack_b = malloc(sizeof(t_list));
 	// i = -1;
-	// printf("stack a size: %i\n",ft_lstsize(*stack_a));
 	// while(++i <= (ft_lstsize(*stack_a) / 2))
 	// 	push_b(stack_a, stack_b);
-	rotate_a(stack_a, 0);
+	
+	while(ft_lstsize(*stack_a) > 1)
+	{
+		if (((*stack_a)->content) > ((*stack_a)->next->content))
+			swap_a(*stack_a, 0);
+		push_b(stack_a, stack_b);
+		push_b(stack_a, stack_b);
+	}
+	
 	print_ll(*stack_a, "a");
-	// print_ll(*stack_b, "b");
+	print_ll(*stack_b, "b");
 	
 	delete_list(*stack_a);
 	delete_list(*stack_b);
-	
 	free(stack_a);
+	free(stack_b);
 	return (0);
 }
 
