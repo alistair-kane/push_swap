@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list_instructions_1.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:03:38 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/15 20:15:06 by alistair         ###   ########.fr       */
+/*   Updated: 2022/01/16 12:56:34 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 
 // swap the first 2 elements at the top of stack a. Do nothing if there
 // is only one or no elements
-void	swap_a(t_list *head_a, int double_flag)
+void	swap_a(t_list **head_a, int double_flag)
 {
 	t_list	*temp;
 	int		val_holder;
 
-	temp = head_a;
+	temp = *head_a;
 	if (temp != NULL && temp->next != NULL)
 	{
 		val_holder = temp->content;
@@ -30,12 +30,12 @@ void	swap_a(t_list *head_a, int double_flag)
 	}
 }
 
-void	swap_b(t_list *head_b, int double_flag)
+void	swap_b(t_list **head_b, int double_flag)
 {
 	t_list	*temp;
 	int		val_holder;
 
-	temp = head_b;
+	temp = *head_b;
 	if (temp != NULL && temp->next != NULL)
 	{
 		val_holder = temp->content;
@@ -46,7 +46,7 @@ void	swap_b(t_list *head_b, int double_flag)
 	}
 }
 
-void	double_swap(t_list *head_a, t_list *head_b)
+void	double_swap(t_list **head_a, t_list **head_b)
 {
 	swap_a(head_a, 1);
 	swap_b(head_b, 1);
