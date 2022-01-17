@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/16 18:50:17 by alkane           ###   ########.fr       */
+/*   Updated: 2022/01/17 14:40:16 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,37 +118,187 @@ void	delete_list(t_list *head_ref)
 	free(head_ref);
 }
 
-void	merge_sort(t_list **stack, t_list **stack_a, t_list **stack_b)
-{
-	int	a_size;
-	int	b_size;
-	
-	a_size = 0;
-	b_size = 0;
-	if (!ft_lstsize(*stack))
-		return ;
-	while (a_size++ < ft_lstsize(*stack))
-		push_b(stack_a, stack_b);
-	while (ft_lstsize(*stack))
-	{
-		push_a(stack_a, stack_b);
-		b_size++;
-	}
-	
-	merge_sort(stack_a, stack_a, stack_b);
-	merge_sort(stack_b, stack_a, stack_b);
+// t_list	*tortoise_and_hare(t_list **stack)
+// {
+// 	t_list* fast;
+// 	t_list* slow;
 
+// 	slow = *stack;
+// 	fast = (*stack)->next;
+// 	/* Advance 'fast' two nodes, and advance 'slow' one node */
+// 	while (fast != NULL) 
+// 	{
+// 		fast = fast -> next;
+// 		if (fast != NULL) 
+// 		{
+// 			slow = slow -> next;
+// 			fast = fast -> next;
+// 		}
+// 	}
+// 	return (slow);
+// }
+
+// void	**do_the_splits(t_list *head, t_list **a, t_list **b, t_list **s_a, t_list **s_b)
+// {
+// 	t_list *mid;
 	
-	printf("----------IN RECURSION:----------\n");
-	print_ll(*stack_a, *stack_b);
+// 	if (ab_flag == 'a')
+// 	{
+// 		mid = tortoise_and_hare(stack_a);
+// 		while (*stack_a != mid)
+// 			push_b(s_a, s_b);
+// 		return (stack_b);	
+// 	}
+// 	if (ab_flag == 'b')
+// 	{
+// 		mid = tortoise_and_hare(stack_b);
+// 		while (*stack_b != mid)
+// 			push_a(s_a, s_b);
+// 		return (stack_a);
+// 	}
+// 	// mid is the point to push to
+// 	// experimental code lmao
+// 	return (NULL);
+// }
+
+// void	where_the_actual_work_happens(t_list **stack_a, t_list **stack_b, int *sorted)
+// {
+// 	if (*stack_a == NULL)
+// 		return ;
+// 	if (*stack_b == NULL)
+// 		return ;
+	
+// 	if ((*stack_a)->content <= (*stack_b)->content)
+// 	{
+// 		rotate_a(stack_a, 0);
+// 		(*sorted)++;
+// 		where_the_actual_work_happens(stack_a, stack_b, sorted);
+// 	}
+// 	else
+// 	{
+// 		push_a(stack_a, stack_b);
+// 		rotate_a(stack_a, 0);
+// 		(*sorted)++;
+// 		where_the_actual_work_happens(stack_a, stack_b, sorted);
+// 	}
+		
+// }
+
+// void	super_cool_merge_stack_sort(t_list **copy_head)
+// {
+// 	t_list* head = *headRef;
+// 	t_list* a;
+// 	t_list* b;
+	
+// 	// sorted = NULL;
+// 	// // 2 just because base case stuff, will change later smile
+// 	// if (sorted && (*sorted > (ft_lstsize(*stack_a) + ft_lstsize(*stack_b) - 2)))
+// 	// 	return ;
+// 	if ((head == NULL) || (head->next == NULL))
+// 		return;
+
+// 	do_the_splits(head, &a, &b, stack_a, stack_b);
+// 	// do_the_splits(stack_a, stack_b, 'b');
+	
+// 	super_cool_merge_stack_sort(&a, stack_a, stack_b);
+// 	super_cool_merge_stack_sort(&b, stack_a, stack_b);
+
+// 	where_the_actual_work_happens(a, b, stack_a, stack_b, sorted);
+// }
+
+t_list*	SortedMerge(t_list* a, t_list* b);
+void	FrontBackSplit(t_list* source, t_list** frontRef, t_list** backRef);
+
+/* sorts the linked list by changing next pointers (not data) */
+void	MergeSort(t_list** headRef)
+{
+	t_list* head = *headRef;
+	t_list* a;
+	t_list* b;
+
+	/* Base case -- length 0 or 1 */
+	if ((head == NULL) || (head->next == NULL)) {
+		return;
+	}
+
+	/* Split head into 'a' and 'b' sublists */
+	FrontBackSplit(head, &a, &b);
+
+	/* Recursively sort the sublists */
+	MergeSort(&a);
+	MergeSort(&b);
+
+	/* answer = merge the two sorted lists together */
+	
+	// put back into da stacks here
+	// dont need no headref return, just pass a,b ez
+	*headRef = SortedMerge(a, b);
+}
+
+/* See https:// www.geeksforgeeks.org/?p=3622 for details of this 
+function */
+// takes 2 elements
+// the moving happens here
+t_list*	SortedMerge(t_list* a, t_list* b)
+{
+	t_list* result = NULL;
+
+	/* Base cases */
+	if (a == NULL)
+		return (b);
+	else if (b == NULL)
+		return (a);
+
+	/* Pick either a or b, and recur */
+	if (a->content <= b->content)
+	{
+		result = a;
+		result->next = SortedMerge(a->next, b);
+	}
+	else
+	{
+		result = b;
+		result->next = SortedMerge(a, b->next);
+	}
+	return (result);
+}
+
+/* Split the nodes of the given list into front and back halves,
+	and return the two lists using the reference parameters.
+	If the length is odd, the extra node should go in the front list.
+	Uses the fast/slow pointer strategy. */
+
+void	FrontBackSplit(t_list* source, t_list** frontRef, t_list** backRef)
+{
+	t_list* fast;
+	t_list* slow;
+
+	slow = source;
+	fast = source -> next;
+	/* Advance 'fast' two nodes, and advance 'slow' one node */
+	while (fast != NULL) 
+	{
+		fast = fast -> next;
+		if (fast != NULL) 
+		{
+			slow = slow -> next;
+			fast = fast -> next;
+		}
+	}
+
+	/* 'slow' is before the midpoint in the list, so split it in two
+	at that point. */
+	
+	*frontRef = source;
+	*backRef = slow -> next;
+	// print_ll(*frontRef, *backRef);
+	slow -> next = NULL;
 }
 
 int	main(int argc, char **argv)
 {
 	t_list	**stack_a;
 	t_list	**stack_b;
-	// int		cluster_size;
-	// int		i;
 
 	if (argc <= 1)
 		return (0);
@@ -159,11 +309,27 @@ int	main(int argc, char **argv)
 	printf("---------ENTRY STACK:-----------\n");
 	print_ll(*stack_a, *stack_b);
 	
-	while (ft_lstsize(*stack_a) > ft_lstsize(*stack_b))
-		push_b(stack_a, stack_b);
-		
-	merge_sort(stack_a, stack_a, stack_b);
-	merge_sort(stack_b, stack_a, stack_b);
+	// super_cool_merge_stack_sort(stack_a, stack_b);
+	MergeSort(stack_a);
+
+	printf("----------SECOND SORT:---------\n");
+	print_ll(*stack_a, *stack_b);
+
+	delete_list(*stack_a);
+	delete_list(*stack_b);
+	free(stack_a);
+	free(stack_b);
+	return (0);
+}
+
+// gcc -Wall -Werror -Wextra -g list_instructions_1.c list_instructions_2.c list_instructions_3.c libft/libft.a push_swap.c -o push_swap
+
+	// while (ft_lstsize(*stack_a) > ft_lstsize(*stack_b))
+	// 	push_b(stack_a, stack_b);
+	
+	// MergeSort(stack_a);
+	// merge_sort(stack_a, stack_a, stack_b);
+	// merge_sort(stack_b, stack_a, stack_b);
 	// cluster_size = 1;
 	// while(ft_lstsize(*stack_a) > 1)
 	// {
@@ -204,94 +370,81 @@ int	main(int argc, char **argv)
 	// 	// }
 	// 	clusters++;
 	// }
-	// printf("----------SECOND SORT:---------\n");
-	// print_ll(*stack_a, *stack_b);
+	
 
-	delete_list(*stack_a);
-	delete_list(*stack_b);
-	free(stack_a);
-	free(stack_b);
-	return (0);
-}
 
-// gcc -Wall -Werror -Wextra -g list_instructions_1.c list_instructions_2.c list_instructions_3.c libft/libft.a push_swap.c -o push_swap
-
-// t_list*	SortedMerge(t_list* a, t_list* b);
-// void	FrontBackSplit(t_list* source, t_list** frontRef, t_list** backRef);
-
-// /* sorts the linked list by changing next pointers (not data) */
-// void	MergeSort(t_list** headRef)
+/* sorts the linked list by changing next pointers (not data) */
+// void MergeSort(struct Node** headRef)
 // {
-// 	t_list* head = *headRef;
-// 	t_list* a;
-// 	t_list* b;
+//     struct Node* head = *headRef;
+//     struct Node* a;
+//     struct Node* b;
 
-// 	/* Base case -- length 0 or 1 */
-// 	if ((head == NULL) || (head->next == NULL)) {
-// 		return;
-// 	}
+//     /* Base case -- length 0 or 1 */
+//     if ((head == NULL) || (head->next == NULL)) {
+//         return;
+//     }
 
-// 	/* Split head into 'a' and 'b' sublists */
-// 	FrontBackSplit(head, &a, &b);
+//     /* Split head into 'a' and 'b' sublists */
+//     FrontBackSplit(head, &a, &b);
 
-// 	/* Recursively sort the sublists */
-// 	MergeSort(&a);
-// 	MergeSort(&b);
+//     /* Recursively sort the sublists */
+//     MergeSort(&a);
+//     MergeSort(&b);
 
-// 	/* answer = merge the two sorted lists together */
-// 	*headRef = SortedMerge(a, b);
+//     /* answer = merge the two sorted lists together */
+//     *headRef = SortedMerge(a, b);
 // }
 
 // /* See https:// www.geeksforgeeks.org/?p=3622 for details of this 
 // function */
-// // takes 2 elements
-// // the moving happens here
-// t_list*	SortedMerge(t_list* a, t_list* b)
+// struct Node* SortedMerge(struct Node* a, struct Node* b)
 // {
-// 	t_list* result = NULL;
+//     struct Node* result = NULL;
 
-// 	/* Base cases */
-// 	if (a == NULL)
-// 		return (b);
-// 	else if (b == NULL)
-// 		return (a);
+//     /* Base cases */
+//     if (a == NULL)
+//         return (b);
+//     else if (b == NULL)
+//         return (a);
 
-// 	/* Pick either a or b, and recur */
-// 	if (a->content <= b->content)
-// 	{
-// 		result = a;
-// 		result->next = SortedMerge(a->next, b);
-// 	}
-// 	else
-// 	{
-// 		result = b;
-// 		result->next = SortedMerge(a, b->next);
-// 	}
-// 	return (result);
+//     /* Pick either a or b, and recur */
+//     if (a->data <= b->data) {
+//         result = a;
+//         result->next = SortedMerge(a->next, b);
+//     }
+//     else {
+//         result = b;
+//         result->next = SortedMerge(a, b->next);
+//     }
+//     return (result);
 // }
 
+// /* UTILITY FUNCTIONS */
 // /* Split the nodes of the given list into front and back halves,
-// 	and return the two lists using the reference parameters.
-// 	If the length is odd, the extra node should go in the front list.
-// 	Uses the fast/slow pointer strategy. */
-// void	FrontBackSplit(t_list* source, t_list** frontRef, t_list** backRef)
+//     and return the two lists using the reference parameters.
+//     If the length is odd, the extra node should go in the front list.
+//     Uses the fast/slow pointer strategy. */
+// void FrontBackSplit(struct Node* source,
+//                     struct Node** frontRef, struct Node** backRef)
 // {
-// 	t_list* fast;
-// 	t_list* slow;
+//     struct Node* fast;
+//     struct Node* slow;
+//     slow = source;
+//     fast = source->next;
 
-// 	slow = source;
-// 	fast = source -> next;
-// 	/* Advance 'fast' two nodes, and advance 'slow' one node */
-// 	while (fast != NULL) {
-// 		fast = fast -> next;
-// 		if (fast != NULL) {
-// 			slow = slow -> next;
-// 			fast = fast -> next;
-// 		}
-// 	}
-// 	/* 'slow' is before the midpoint in the list, so split it in two
-// 	at that point. */
-// 	*frontRef = source;
-// 	*backRef = slow -> next;
-// 	slow -> next = NULL;
+//     /* Advance 'fast' two nodes, and advance 'slow' one node */
+//     while (fast != NULL) {
+//         fast = fast->next;
+//         if (fast != NULL) {
+//             slow = slow->next;
+//             fast = fast->next;
+//         }
+//     }
+
+//     /* 'slow' is before the midpoint in the list, so split it in two
+//     at that point. */
+//     *frontRef = source;
+//     *backRef = slow->next;
+//     slow->next = NULL;
 // }
