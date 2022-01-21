@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checker.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/21 00:36:32 by alistair         ###   ########.fr       */
+/*   Updated: 2022/01/21 16:39:42 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,11 +148,26 @@ int	apply_instructions(char *command, t_list **stack_a, t_list **stack_b)
 	return (0);
 }
 
+int	max_val(t_list *head)
+{
+	int max = 0;
+  
+	while (head != NULL)
+	{
+		if (max < head->data)
+			max = head->data;
+		head = head->next;
+	}
+	return (max);
+}
+
 t_list	**solver(t_list **stack_a, t_list **stack_b)
 {
-	static int	stack_len;
+	int	stack_len;
+	int	max;
 	
 	stack_len = ft_lstsize(*stack_a);
+	max = max_val(*stack_a);
 	// stack_len = ft_lstsize(*stack_b);
 	if ((ft_lstsize(*stack_b) <= (stack_len / 2)))
 	{
