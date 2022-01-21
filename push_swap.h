@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/01/16 20:35:15 by alistair         ###   ########.fr       */
+/*   Updated: 2022/01/20 20:53:34 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 // void	ft_lstadd_back(t_list **lst, t_list *new);
 // int		ft_lstsize(t_list *lst);
 
-// t_list	*ft_lstlast(t_list *lst);
 void	swap_a(t_list **head_a, int double_flag);
 void	swap_b(t_list **head_b, int double_flag);
 void	double_swap(t_list **head_a, t_list **head_b);
