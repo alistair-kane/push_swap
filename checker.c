@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/21 16:39:42 by alkane           ###   ########.fr       */
+/*   Updated: 2022/01/21 18:25:21 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,10 @@ int	apply_instructions(char *command, t_list **stack_a, t_list **stack_b)
 		reverse_rotate_b(stack_b, 0);
 	else if (!ft_strncmp("rrr\n", command, 4))
 		double_reverse_rotate(stack_a, stack_b);
+
+	else if (!ft_strncmp(" \n", command, 2))
+		return (0);
+
 	else
 		return (-1);
 	printf("---------- %.2s ----------\n", command);
@@ -154,11 +158,34 @@ int	max_val(t_list *head)
   
 	while (head != NULL)
 	{
-		if (max < head->data)
-			max = head->data;
+		if (max < head->content)
+			max = head->content;
 		head = head->next;
 	}
 	return (max);
+}
+
+int max_run(t_list *head)
+{
+	int 	run_len;
+	t_list	*temp;
+
+	temp = head;
+	run_len = 1;
+	while (temp != NULL)
+	{
+		if ((temp->next) == NULL)
+		{
+			temp->next = head;
+			if ((temp->content) - (temp->next->content) == -1)
+				run_len++;
+			break ;
+		}
+	 	if ((temp->content) - (temp->next->content) == -1)
+			run_len++;
+		temp = temp->next;
+	}
+	return (run_len);
 }
 
 t_list	**solver(t_list **stack_a, t_list **stack_b)
@@ -166,15 +193,14 @@ t_list	**solver(t_list **stack_a, t_list **stack_b)
 	int	stack_len;
 	int	max;
 	
-	stack_len = ft_lstsize(*stack_a);
+	stack_len = ft_lstsize(*stack_b);
 	max = max_val(*stack_a);
-	// stack_len = ft_lstsize(*stack_b);
-	if ((ft_lstsize(*stack_b) <= (stack_len / 2)))
+	if (stack_len < (max / 2))
 	{
-		if (((*stack_a)->content) <= (stack_len / 2))
+		if (((*stack_a)->content) <= (max / 2))
 		{
-			push_b(stack_a, stack_b);
 			printf("---------- Automove ----------\n");
+			push_b(stack_a, stack_b);
 			print_ll(*stack_a, *stack_b);
 		}
 		else
@@ -187,7 +213,6 @@ int	main(int argc, char **argv)
 {
 	t_list	**stack_a;
 	t_list	**stack_b;
-	// char	*instruction;
 
 	if (argc <= 1)
 		return (0);
@@ -197,17 +222,19 @@ int	main(int argc, char **argv)
 	stack_b = malloc(sizeof(t_list));
 	printf("---------ENTRY STACK:-----------\n");
 	print_ll(*stack_a, *stack_b);
-	int i = 0;
-	while (i++ < 30)
+	
+	// int i = 0;
+	char	*instruction;
+	while (1)
 	{
-		
+		// printf("max run: %d", max_run(*stack_a));
 		stack_a = solver(stack_a, stack_b);
 		
-		// instruction = get_next_line(0);
-		// if (instruction == NULL)
-		// 	break ;
-		// if(apply_instructions(instruction, stack_a, stack_b))
-		// 	return(return_error());
+		instruction = get_next_line(0);
+		if (instruction == NULL)
+			break ;
+		if(apply_instructions(instruction, stack_a, stack_b))
+			return(return_error());
 	}
 	// super_cool_merge_stack_sort(stack_a, stack_b);
 	// MergeSort(stack_a);
