@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checker.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/25 15:15:06 by alistair         ###   ########.fr       */
+/*   Updated: 2022/01/25 22:58:09 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,30 +211,46 @@ int	get_nth(t_list *head, int index)
 	return(-1);
 }
 
-static void	move_b_idx(t_list **stack_b, t_list **stack_a, int width)
+static void	move_idx(t_list **stack_b, t_list **stack_a, int width, int active)
 {
 	int i;
-	
 	// based on max val i.e max list size;
 	//	calc the new values of i and j inside here from above ^
 	i = 0;
 	while (i < width)
 	{
-		rotate_a(stack_a, 0);
+		if (!active)
+			rotate_a(stack_a, 0);
+		else
+			rotate_b(stack_b, 0);
 		i++;
 	}
-	push_b(stack_a, stack_b);
-	while (i > 0 && ft_lstsize(*stack_a) > 1)
+	if (!active)
+		push_b(stack_a, stack_b);
+	else
+		push_a(stack_a, stack_b);
+	if (!active)
 	{
-		reverse_rotate_a(stack_a, 0);
-		i--;
+		while (i > 0 && ft_lstsize(*stack_a) > 1)
+		{
+			reverse_rotate_a(stack_a, 0);
+			i--;
+		}
+	}
+	else
+	{
+		while (i > 0 && ft_lstsize(*stack_b) > 1)
+		{
+			reverse_rotate_b(stack_b, 0);
+			i--;
+		}
 	}
 }
 static void	merge(t_list **stack_a, int width, t_list **stack_b)
 {
 	int i;
 	int j;
-	int	l;
+	int	k;
 	int i_right;
 	int i_middle;
 	
@@ -249,24 +265,24 @@ static void	merge(t_list **stack_a, int width, t_list **stack_b)
 		{
 			if (get_nth(*stack_a, 0) < get_nth(*stack_a, (j - k)))
 			{
-				move_b_idx(stack_b, stack_a, 0);
+				move_idx(stack_b, stack_a, 0, 0);
 				i++;
 			}
 			else
 			{
-				move_b_idx(stack_b, stack_a, (j - k));
+				move_idx(stack_b, stack_a, (j - k), 0);
 				j++;
 			}
 			k++;
 		}
 		else if (i == i_middle)
 		{
-			move_b_idx(stack_b, stack_a, 0);
+			move_idx(stack_b, stack_a, 0, 0);
 			j++;
 		}
 		else if (j == i_right)
 		{
-			move_b_idx(stack_b, stack_a, 0);
+			move_idx(stack_b, stack_a, 0, 0);
 			i++;
 		}
 	}
@@ -275,26 +291,69 @@ static void	merge(t_list **stack_a, int width, t_list **stack_b)
 	// "active/focus" stack switches 
 }
 
+// gcc -Wall -Werror -Wextra -g list_instructions_1.c list_instructions_2.c list_instructions_3.c checker.c libft/libft.a -o checker
+
+// static void	sort_three(t_list **stack_a, t_list **stack_b)
+// {
+// 	int	len;
+
+// 	len = ft_lstsize(*stack_a);
+// 	if (len == 1)
+// 	{
+// 		push_b(stack_a, stack_b);
+// 		return ;
+// 	}
+// 	else if (len == 2)
+// 	{
+// 		if (get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			swap_a(stack_a, 0);
+// 		push_b(stack_a, stack_b);
+// 		push_b(stack_a, stack_b);
+// 		return ;
+// 	}
+// 	else
+// 	{
+// 		if ((get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) > get_nth(*stack_a, 2))
+// 			&& (get_nth(*stack_a, 1) < get_nth(*stack_a, 2)))
+// 			rotate_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) < get_nth(*stack_a, 2)))
+// 			swap_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) < get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) > get_nth(*stack_a, 2)))
+// 			reverse_rotate_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) < get_nth(*stack_a, 2))
+// 			&& (get_nth(*stack_a, 1) > get_nth(*stack_a, 2)))
+// 		{
+// 			rotate_a(stack_a, 0);
+// 			swap_a(stack_a, 0);
+// 			reverse_rotate_a(stack_a, 0);
+// 		}
+// 		sort_three(stack_a, stack_b);
+// 	}
+// }
+
 void	sortver(t_list **stack_a, t_list **stack_b)
 {
 	int	a_len;
 	int	width;
-	int	i;
-	
+	int active;
+
 	a_len = ft_lstsize(*stack_a);
 	width = 1;
+	active = 0;
 	while (width < a_len)
 	{
-		while (ft_lstsize(*stack_a) > 1)
+		while (ft_lstsize(*stack_a) > 1)// && max_run(*stack_a) < a_len)
 		{
 			merge(stack_a, width, stack_b);
-			// after 1st merge stacks have shifted, now need to go from b to a
+			// after every merge stacks shift, now need to go from b to a
 		}
 		width = 2 * width;
-		i = 0;
+		int i = 0;
 		while (i <= a_len)
 		{
-			// reverse_rotate_b(stack_b, 0);
 			push_a(stack_a, stack_b);
 			i++;
 		}
@@ -323,13 +382,12 @@ int	main(int argc, char **argv)
 	
 	sortver(stack_a, stack_b);
 
-		// instruction = get_next_line(0);
-		// if (instruction == NULL)
-		// 	break ;
-		// if(apply_instructions(instruction, stack_a, stack_b))
-		// 	return(return_error());
+	// instruction = get_next_line(0);
+	// if (instruction == NULL)
+	// 	break ;
+	// if(apply_instructions(instruction, stack_a, stack_b))
+	// 	return(return_error());
 	// }
-	// MergeSort(stack_a);
 	printf("\n---------- done ----------\n");
 	print_ll(*stack_a, *stack_b);
 	
