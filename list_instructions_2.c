@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list_instructions_2.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/15 16:49:34 by alkane            #+#    #+#             */
-/*   Updated: 2022/01/15 18:38:48 by alkane           ###   ########.fr       */
+/*   Updated: 2022/01/24 16:02:27 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	rotate_a(t_list **head_a, int double_flag)
 	t_list	*last;
 	t_list	*second;
 
+	if (!*head_a)
+		return ;
 	last = *head_a;
 	second = (*head_a)->next;
 	while (last->next != NULL)
@@ -33,6 +35,8 @@ void	rotate_b(t_list **head_b, int double_flag)
 	t_list	*last;
 	t_list	*second;
 
+	if (!*head_b)
+		return ;
 	last = *head_b;
 	second = (*head_b)->next;
 	while (last->next != NULL)

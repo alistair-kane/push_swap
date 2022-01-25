@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checker.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/21 18:25:21 by alkane           ###   ########.fr       */
+/*   Updated: 2022/01/25 15:15:06 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,52 +168,146 @@ int	max_val(t_list *head)
 int max_run(t_list *head)
 {
 	int 	run_len;
+	int		temp_run;
+	int		last_val;
 	t_list	*temp;
 
 	temp = head;
-	run_len = 1;
-	while (temp != NULL)
-	{
-		if ((temp->next) == NULL)
+	run_len = 0;
+	temp_run = 0;
+	while (temp->next != NULL)
+	{	
+		if (((temp->content) - (temp->next->content)) == -1)
 		{
-			temp->next = head;
-			if ((temp->content) - (temp->next->content) == -1)
-				run_len++;
-			break ;
+			temp_run++;
+			if (run_len < temp_run)
+				run_len = temp_run;
 		}
-	 	if ((temp->content) - (temp->next->content) == -1)
-			run_len++;
+		else
+			temp_run = 0;
+		last_val  = temp->content;
 		temp = temp->next;
 	}
+	if ((temp->next == NULL) && (last_val - (temp->content)) == -1)
+		run_len++;
+
 	return (run_len);
 }
 
-t_list	**solver(t_list **stack_a, t_list **stack_b)
+int	get_nth(t_list *head, int index)
 {
-	int	stack_len;
-	int	max;
-	
-	stack_len = ft_lstsize(*stack_b);
-	max = max_val(*stack_a);
-	if (stack_len < (max / 2))
+	t_list	*current;
+	int		count;
+
+	current = head;
+	count = 0;
+	while (current != NULL)
 	{
-		if (((*stack_a)->content) <= (max / 2))
-		{
-			printf("---------- Automove ----------\n");
-			push_b(stack_a, stack_b);
-			print_ll(*stack_a, *stack_b);
-		}
-		else
-			reverse_rotate_a(stack_a, 0);
+		if (count == index)
+			return (current->content);
+		count++;
+		current = current->next;
 	}
-	return(stack_a);
+	return(-1);
+}
+
+static void	move_b_idx(t_list **stack_b, t_list **stack_a, int width)
+{
+	int i;
+	
+	// based on max val i.e max list size;
+	//	calc the new values of i and j inside here from above ^
+	i = 0;
+	while (i < width)
+	{
+		rotate_a(stack_a, 0);
+		i++;
+	}
+	push_b(stack_a, stack_b);
+	while (i > 0 && ft_lstsize(*stack_a) > 1)
+	{
+		reverse_rotate_a(stack_a, 0);
+		i--;
+	}
+}
+static void	merge(t_list **stack_a, int width, t_list **stack_b)
+{
+	int i;
+	int j;
+	int	l;
+	int i_right;
+	int i_middle;
+	
+	i = 0;
+	j = width;
+	k = 0;
+	i_right = 2 * width;
+	i_middle = width;
+	while (i < i_middle || j < i_right)
+	{
+		if (i < i_middle && j < i_right)
+		{
+			if (get_nth(*stack_a, 0) < get_nth(*stack_a, (j - k)))
+			{
+				move_b_idx(stack_b, stack_a, 0);
+				i++;
+			}
+			else
+			{
+				move_b_idx(stack_b, stack_a, (j - k));
+				j++;
+			}
+			k++;
+		}
+		else if (i == i_middle)
+		{
+			move_b_idx(stack_b, stack_a, 0);
+			j++;
+		}
+		else if (j == i_right)
+		{
+			move_b_idx(stack_b, stack_a, 0);
+			i++;
+		}
+	}
+	printf("---------- moves ----------\n\n");
+	print_ll(*stack_a, *stack_b);
+	// "active/focus" stack switches 
+}
+
+void	sortver(t_list **stack_a, t_list **stack_b)
+{
+	int	a_len;
+	int	width;
+	int	i;
+	
+	a_len = ft_lstsize(*stack_a);
+	width = 1;
+	while (width < a_len)
+	{
+		while (ft_lstsize(*stack_a) > 1)
+		{
+			merge(stack_a, width, stack_b);
+			// after 1st merge stacks have shifted, now need to go from b to a
+		}
+		width = 2 * width;
+		i = 0;
+		while (i <= a_len)
+		{
+			// reverse_rotate_b(stack_b, 0);
+			push_a(stack_a, stack_b);
+			i++;
+		}
+		// printf("---------- a-push ----------\n\n");
+		// print_ll(*stack_a, *stack_b);
+	}
 }
 
 int	main(int argc, char **argv)
 {
 	t_list	**stack_a;
 	t_list	**stack_b;
-
+	
 	if (argc <= 1)
 		return (0);
 	stack_a = list_builder(argc, argv);
@@ -222,23 +316,22 @@ int	main(int argc, char **argv)
 	stack_b = malloc(sizeof(t_list));
 	printf("---------ENTRY STACK:-----------\n");
 	print_ll(*stack_a, *stack_b);
+
+	// char	*instruction;
+	// while (1)
+	// {
 	
-	// int i = 0;
-	char	*instruction;
-	while (1)
-	{
-		// printf("max run: %d", max_run(*stack_a));
-		stack_a = solver(stack_a, stack_b);
-		
-		instruction = get_next_line(0);
-		if (instruction == NULL)
-			break ;
-		if(apply_instructions(instruction, stack_a, stack_b))
-			return(return_error());
-	}
-	// super_cool_merge_stack_sort(stack_a, stack_b);
+	sortver(stack_a, stack_b);
+
+		// instruction = get_next_line(0);
+		// if (instruction == NULL)
+		// 	break ;
+		// if(apply_instructions(instruction, stack_a, stack_b))
+		// 	return(return_error());
+	// }
 	// MergeSort(stack_a);
 	printf("\n---------- done ----------\n");
+	print_ll(*stack_a, *stack_b);
 	
 	delete_list(*stack_a);
 	delete_list(*stack_b);
@@ -246,3 +339,64 @@ int	main(int argc, char **argv)
 	free(stack_b);
 	return (0);
 }
+
+// here is my 1st solver, 90945 moves for 500 numbers wow
+// int	solver(t_list **stack_a, t_list **stack_b)
+// {
+// 	int	lst_a_size;
+// 	int	max_r;
+// 	int	moves;
+	
+// 	moves = 0;
+// 	lst_a_size = ft_lstsize(*stack_a);
+// 	max_r = max_run(*stack_a);
+// 	if (max_r == lst_a_size)
+// 		return(moves); 
+// 	while (max_run(*stack_a) < ft_lstsize(*stack_a) && ft_lstsize(*stack_a) > 1)
+// 	{
+// 		// printf("---------- Status ----------\n");
+// 		// print_ll(*stack_a, *stack_b);
+// 		if ((*stack_a)->content == ft_lstsize(*stack_b))
+// 		{
+// 			push_b(stack_a, stack_b);
+// 		}
+// 		else if ((*stack_a)->content > (*stack_a)->next->content)
+// 		{
+// 			swap_a(stack_a, 0);
+// 		}
+// 		else
+// 			reverse_rotate_a(stack_a, 0);
+// 		moves++;
+// 	}
+
+// void	sortver(t_list **stack_a, t_list **stack_b)
+// {
+// 	int	a_len;
+// 	int	width;
+// 	int	i;
+	
+// 	a_len = ft_lstsize(*stack_a);
+// 	width = 1;
+// 	while (width < a_len)
+// 	{
+// 		i = 0;
+// 		while (i < a_len)
+// 		{
+// 			if (ft_lstsize(*stack_a) > 1)
+// 				merge(stack_a, i, width, stack_b);
+// 			// after 1st merge stacks have shifted, now need to go from b to a
+// 			else
+// 				i = i + 2 * width;
+// 		}
+// 		width = 2 * width;
+// 		i = 0;
+// 		while (i <= a_len)
+// 		{
+// 			// reverse_rotate_b(stack_b, 0);
+// 			push_a(stack_a, stack_b);
+// 			i++;
+// 		}
+// 		// printf("---------- a-push ----------\n\n");
+// 		// print_ll(*stack_a, *stack_b);
+// 	}
+// }
