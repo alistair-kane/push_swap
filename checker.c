@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/28 13:03:53 by alistair         ###   ########.fr       */
+/*   Updated: 2022/01/28 13:12:35 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -350,6 +350,49 @@ static void	merge(int i, t_state *state)
 	}
 }
 
+// gcc -Wall -Werror -Wextra -g list_instructions_1.c list_instructions_2.c list_instructions_3.c checker.c libft/libft.a -o checker
+
+// static void	sort_three(t_list **stack_a, t_list **stack_b)
+// {
+// 	int	len;
+
+// 	len = ft_lstsize(*stack_a);
+// 	if (len == 1)
+// 	{
+// 		push_b(stack_a, stack_b);
+// 		return ;
+// 	}
+// 	else if (len == 2)
+// 	{
+// 		if (get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			swap_a(stack_a, 0);
+// 		push_b(stack_a, stack_b);
+// 		push_b(stack_a, stack_b);
+// 		return ;
+// 	}
+// 	else
+// 	{
+// 		if ((get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) > get_nth(*stack_a, 2))
+// 			&& (get_nth(*stack_a, 1) < get_nth(*stack_a, 2)))
+// 			rotate_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) < get_nth(*stack_a, 2)))
+// 			swap_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) < get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) > get_nth(*stack_a, 2)))
+// 			reverse_rotate_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) < get_nth(*stack_a, 2))
+// 			&& (get_nth(*stack_a, 1) > get_nth(*stack_a, 2)))
+// 		{
+// 			rotate_a(stack_a, 0);
+// 			swap_a(stack_a, 0);
+// 			reverse_rotate_a(stack_a, 0);
+// 		}
+// 		sort_three(stack_a, stack_b);
+// 	}
+// }
+
 void	sortver(t_list **stack_a, t_list **stack_b)
 {
 	t_state *state;
@@ -417,13 +460,12 @@ int	main(int argc, char **argv)
 	
 	sortver(stack_a, stack_b);
 
-		// instruction = get_next_line(0);
-		// if (instruction == NULL)
-		// 	break ;
-		// if(apply_instructions(instruction, stack_a, stack_b))
-		// 	return(return_error());
+	// instruction = get_next_line(0);
+	// if (instruction == NULL)
+	// 	break ;
+	// if(apply_instructions(instruction, stack_a, stack_b))
+	// 	return(return_error());
 	// }
-	// MergeSort(stack_a);
 	printf("\n---------- done ----------\n");
 	print_ll(*stack_a, *stack_b);
 	
