@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checker.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/28 13:12:35 by alistair         ###   ########.fr       */
+/*   Updated: 2022/01/29 03:45:41 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,48 +152,6 @@ int	apply_instructions(char *command, t_list **stack_a, t_list **stack_b)
 	return (0);
 }
 
-int	max_val(t_list *head)
-{
-	int max = 0;
-  
-	while (head != NULL)
-	{
-		if (max < head->content)
-			max = head->content;
-		head = head->next;
-	}
-	return (max);
-}
-
-int max_run(t_list *head)
-{
-	int 	run_len;
-	int		temp_run;
-	int		last_val;
-	t_list	*temp;
-
-	temp = head;
-	run_len = 0;
-	temp_run = 0;
-	while (temp->next != NULL)
-	{	
-		if (((temp->content) - (temp->next->content)) == -1)
-		{
-			temp_run++;
-			if (run_len < temp_run)
-				run_len = temp_run;
-		}
-		else
-			temp_run = 0;
-		last_val  = temp->content;
-		temp = temp->next;
-	}
-	if ((temp->next == NULL) && (last_val - (temp->content)) == -1)
-		run_len++;
-
-	return (run_len);
-}
-
 int	get_nth(t_list *head, int index)
 {
 	t_list	*current;
@@ -239,46 +197,62 @@ t_list	*reverse_list(t_list **head)
 	return(prev);
 }
 
-static t_list *reverse_single(t_list *head)
+static void move_maker(int target, t_list **stack_a)
 {
-	t_list *prev;
-	t_list *current;
-	t_list *temp;
+	int i;
+	int j;
+	t_list *totally_different_list;
 	
-	prev = NULL;
-	current = head;
-	while (current)
+	i = 0;
+	totally_different_list = *stack_a;
+	while (totally_different_list->content != target)
 	{
-		temp = current->next;
-		current->next = prev;
-		prev = current;
-		current = temp;
+		rotate_a(&totally_different_list, 0);
+		i++;
 	}
-	return(prev);
+	j = 0;
+	totally_different_list = *stack_a;
+	while (totally_different_list->content != target)
+	{
+		reverse_rotate_a(&totally_different_list, 0);
+		j++;
+	}
+	if (i < j)
+	{
+		while ((*stack_a)->content != target)
+			rotate_a(stack_a, 0);
+	}
+	else
+		while ((*stack_a)->content != target)
+			reverse_rotate_a(stack_a, 0);
 }
 
 static void	move_vals(t_list **stack_b, t_list **stack_a, t_state *state)
 {
 	t_list *order;
+	t_list *holder_pointer;
 
-	//lets just reversing at the start
-	if (!state->active)
+	//lets just reverse at the start
+	if (state->active == 0)
 		order = *(state->order);
 	else
-		order = reverse_single(*(state->order));
-
+		order = reverse_list(*&(state->order));
 	while (order != NULL)
 	{
 		if (state->active == 0)
 		{
+			// looking to match the values here,
+			// need to find the difference between them to know what move to do.
 			while ((*stack_a)->content != order->content)
 				rotate_a(stack_a, 0);
+			
+			// move_maker(order->content, stack_a);
+			
 			order = order->next;
 			push_b(stack_a, stack_b);
 		}
 		else
 		{
-			// reversing in a while loop maybe bad :)
 			while ((*stack_b)->content != order->content)
 				rotate_b(stack_b, 0);
 			order = order->next;
@@ -316,95 +290,43 @@ static	t_list *copy(t_list *head)
 
 static void	merge(int i, t_state *state)
 {
-	int j;
-	int k;
+	int			j;
+	int			k;
 	t_list	*temp;
-	
+
 	j = state->i_right;
-	k = i;
+	k = i - 1;
 	temp = state->temp;
-	while (k < state->i_end)
+	while (++k < state->i_end)
 	{
-		int ival = get_nth(temp, i);
-		int jval = get_nth(temp, j);
-		printf("Comparison between i: %i and j: %i\n", ival, jval);
-		
-		// if (i < state->i_right && (j >= state->i_end || comparison(temp, i, j, state->active)))
 		if (i < state->i_right && (j >= state->i_end || get_nth(temp, i) < get_nth(temp, j)))
 		{
 			if (*(state->order) == NULL)
-				*(state->order) = ft_lstnew(get_nth(temp, i));
+				*(state->order) = ft_lstnew(get_nth(temp, i++));
 			else
-				ft_lstadd_back(state->order, ft_lstnew(get_nth(temp, i)));
-			i++;
+				ft_lstadd_back(state->order, ft_lstnew(get_nth(temp, i++)));
 		}
 		else
 		{
 			if (*(state->order) == NULL)
-				*(state->order) = ft_lstnew(get_nth(temp, j));
+				*(state->order) = ft_lstnew(get_nth(temp, j++));
 			else
-				ft_lstadd_back(state->order, ft_lstnew(get_nth(temp, j)));
-			j++;
+				ft_lstadd_back(state->order, ft_lstnew(get_nth(temp, j++)));
 		}
-		k++;
 	}
 }
 
-// gcc -Wall -Werror -Wextra -g list_instructions_1.c list_instructions_2.c list_instructions_3.c checker.c libft/libft.a -o checker
-
-// static void	sort_three(t_list **stack_a, t_list **stack_b)
-// {
-// 	int	len;
-
-// 	len = ft_lstsize(*stack_a);
-// 	if (len == 1)
-// 	{
-// 		push_b(stack_a, stack_b);
-// 		return ;
-// 	}
-// 	else if (len == 2)
-// 	{
-// 		if (get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
-// 			swap_a(stack_a, 0);
-// 		push_b(stack_a, stack_b);
-// 		push_b(stack_a, stack_b);
-// 		return ;
-// 	}
-// 	else
-// 	{
-// 		if ((get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
-// 			&& (get_nth(*stack_a, 0) > get_nth(*stack_a, 2))
-// 			&& (get_nth(*stack_a, 1) < get_nth(*stack_a, 2)))
-// 			rotate_a(stack_a, 0);
-// 		else if ((get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
-// 			&& (get_nth(*stack_a, 0) < get_nth(*stack_a, 2)))
-// 			swap_a(stack_a, 0);
-// 		else if ((get_nth(*stack_a, 0) < get_nth(*stack_a, 1))
-// 			&& (get_nth(*stack_a, 0) > get_nth(*stack_a, 2)))
-// 			reverse_rotate_a(stack_a, 0);
-// 		else if ((get_nth(*stack_a, 0) < get_nth(*stack_a, 2))
-// 			&& (get_nth(*stack_a, 1) > get_nth(*stack_a, 2)))
-// 		{
-// 			rotate_a(stack_a, 0);
-// 			swap_a(stack_a, 0);
-// 			reverse_rotate_a(stack_a, 0);
-// 		}
-// 		sort_three(stack_a, stack_b);
-// 	}
-// }
-
 void	sortver(t_list **stack_a, t_list **stack_b)
 {
-	t_state *state;
-	int	a_len;
-	int	width;
-	int	i;
+	t_state	*state;
+	int		a_len;
+	int		width;
+	int		i;
 	t_list	**order;
 	
-	a_len = ft_lstsize(*stack_a);
-	printf("a_len: %i", a_len);
-	width = 1;
 	state = malloc(sizeof(t_state));
+	a_len = ft_lstsize(*stack_a);
+	width = 1;
 	order = malloc(sizeof(t_list));
 	state->order = order;
 	state->active = 0;
@@ -414,30 +336,23 @@ void	sortver(t_list **stack_a, t_list **stack_b)
 		if (!state->active)
 			state->temp = copy(*stack_a);
 		else
-		{
-			// reverse here?
-			state->temp = copy(*stack_b);
 			state->temp = reverse_list(stack_b);
-		}
 		while (i < a_len)
 		{
 			state->i_right = min((i + width), a_len);
 			state->i_end = min((i + 2 * width), a_len);
-			printf("Width: %i\n", width);
 			merge(i, state);
 			i = i + 2 * width;
 		}
 		width = 2 * width;
 		move_vals(stack_b, stack_a, state);
-		// after 1st merge stacks have shifted, now need to go from b to a
-		if (!state->active)
+		if (state->active == 0)
 			state->active = 1;
 		else
 			state->active = 0;
 		*(state->order) = NULL;
-		// printf("---------- a-push ----------\n\n");
-		// print_ll(*stack_a, *stack_b);
 	}
+	// printf("End active val: %i", state->active);
 }
 
 int	main(int argc, char **argv)
@@ -451,8 +366,8 @@ int	main(int argc, char **argv)
 	if (!stack_a)
 		return (return_error());
 	stack_b = malloc(sizeof(t_list));
-	printf("---------ENTRY STACK:-----------\n");
-	print_ll(*stack_a, *stack_b);
+	// printf("---------ENTRY STACK:-----------\n");
+	// print_ll(*stack_a, *stack_b);
 
 	// char	*instruction;
 	// while (1)
@@ -475,6 +390,7 @@ int	main(int argc, char **argv)
 	free(stack_b);
 	return (0);
 }
+// 537980 for 500 with no basic optimization.
 
 // here is my 1st solver, 90945 moves for 500 numbers wow
 // int	solver(t_list **stack_a, t_list **stack_b)
@@ -644,3 +560,106 @@ int	main(int argc, char **argv)
 // }
 
 // static void	merge(t_list *temp, int i_left, int i_right, int i_end)
+
+// gcc -Wall -Werror -Wextra -g list_instructions_1.c list_instructions_2.c list_instructions_3.c checker.c libft/libft.a -o checker
+
+// static void	sort_three(t_list **stack_a, t_list **stack_b)
+// {
+// 	int	len;
+
+// 	len = ft_lstsize(*stack_a);
+// 	if (len == 1)
+// 	{
+// 		push_b(stack_a, stack_b);
+// 		return ;
+// 	}
+// 	else if (len == 2)
+// 	{
+// 		if (get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			swap_a(stack_a, 0);
+// 		push_b(stack_a, stack_b);
+// 		push_b(stack_a, stack_b);
+// 		return ;
+// 	}
+// 	else
+// 	{
+// 		if ((get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) > get_nth(*stack_a, 2))
+// 			&& (get_nth(*stack_a, 1) < get_nth(*stack_a, 2)))
+// 			rotate_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) > get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) < get_nth(*stack_a, 2)))
+// 			swap_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) < get_nth(*stack_a, 1))
+// 			&& (get_nth(*stack_a, 0) > get_nth(*stack_a, 2)))
+// 			reverse_rotate_a(stack_a, 0);
+// 		else if ((get_nth(*stack_a, 0) < get_nth(*stack_a, 2))
+// 			&& (get_nth(*stack_a, 1) > get_nth(*stack_a, 2)))
+// 		{
+// 			rotate_a(stack_a, 0);
+// 			swap_a(stack_a, 0);
+// 			reverse_rotate_a(stack_a, 0);
+// 		}
+// 		sort_three(stack_a, stack_b);
+// 	}
+// }
+
+// static t_list *reverse_single(t_list *head)
+// {
+// 	t_list *prev;
+// 	t_list *current;
+// 	t_list *temp;
+	
+// 	prev = NULL;
+// 	current = head;
+// 	while (current)
+// 	{
+// 		temp = current->next;
+// 		current->next = prev;
+// 		prev = current;
+// 		current = temp;
+// 	}
+// 	return(prev);
+// }
+
+// int	max_val(t_list *head)
+// {
+// 	int max = 0;
+  
+// 	while (head != NULL)
+// 	{
+// 		if (max < head->content)
+// 			max = head->content;
+// 		head = head->next;
+// 	}
+// 	return (max);
+// }
+
+// int max_run(t_list *head)
+// {
+// 	int 	run_len;
+// 	int		temp_run;
+// 	int		last_val;
+// 	t_list	*temp;
+
+// 	temp = head;
+// 	run_len = 0;
+// 	temp_run = 0;
+// 	while (temp->next != NULL)
+// 	{	
+// 		if (((temp->content) - (temp->next->content)) == -1)
+// 		{
+// 			temp_run++;
+// 			if (run_len < temp_run)
+// 				run_len = temp_run;
+// 		}
+// 		else
+// 			temp_run = 0;
+// 		last_val  = temp->content;
+// 		temp = temp->next;
+// 	}
+// 	if ((temp->next == NULL) && (last_val - (temp->content)) == -1)
+// 		run_len++;
+
+// 	return (run_len);
+// }
