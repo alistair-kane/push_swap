@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/01/18 02:34:43 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/02 19:48:16 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ t_list *print_gne(t_list *node, int *holder)
 		return(empty);
 	}
 	else
-		*holder = node->content;
+		*holder = node->index;
 	return(node);
 }
 
@@ -118,94 +118,6 @@ void	delete_list(t_list *head_ref)
 	free(head_ref);
 }
 
-// t_list	*tortoise_and_hare(t_list **stack)
-// {
-// 	t_list* fast;
-// 	t_list* slow;
-
-// 	slow = *stack;
-// 	fast = (*stack)->next;
-// 	/* Advance 'fast' two nodes, and advance 'slow' one node */
-// 	while (fast != NULL) 
-// 	{
-// 		fast = fast -> next;
-// 		if (fast != NULL) 
-// 		{
-// 			slow = slow -> next;
-// 			fast = fast -> next;
-// 		}
-// 	}
-// 	return (slow);
-// }
-
-// void	**do_the_splits(t_list *head, t_list **a, t_list **b, t_list **s_a, t_list **s_b)
-// {
-// 	t_list *mid;
-	
-// 	if (ab_flag == 'a')
-// 	{
-// 		mid = tortoise_and_hare(stack_a);
-// 		while (*stack_a != mid)
-// 			push_b(s_a, s_b);
-// 		return (stack_b);	
-// 	}
-// 	if (ab_flag == 'b')
-// 	{
-// 		mid = tortoise_and_hare(stack_b);
-// 		while (*stack_b != mid)
-// 			push_a(s_a, s_b);
-// 		return (stack_a);
-// 	}
-// 	// mid is the point to push to
-// 	// experimental code lmao
-// 	return (NULL);
-// }
-
-// void	where_the_actual_work_happens(t_list **stack_a, t_list **stack_b, int *sorted)
-// {
-// 	if (*stack_a == NULL)
-// 		return ;
-// 	if (*stack_b == NULL)
-// 		return ;
-	
-// 	if ((*stack_a)->content <= (*stack_b)->content)
-// 	{
-// 		rotate_a(stack_a, 0);
-// 		(*sorted)++;
-// 		where_the_actual_work_happens(stack_a, stack_b, sorted);
-// 	}
-// 	else
-// 	{
-// 		push_a(stack_a, stack_b);
-// 		rotate_a(stack_a, 0);
-// 		(*sorted)++;
-// 		where_the_actual_work_happens(stack_a, stack_b, sorted);
-// 	}
-		
-// }
-
-// void	super_cool_merge_stack_sort(t_list **copy_head)
-// {
-// 	t_list* head = *headRef;
-// 	t_list* a;
-// 	t_list* b;
-	
-// 	// sorted = NULL;
-// 	// // 2 just because base case stuff, will change later smile
-// 	// if (sorted && (*sorted > (ft_lstsize(*stack_a) + ft_lstsize(*stack_b) - 2)))
-// 	// 	return ;
-// 	if ((head == NULL) || (head->next == NULL))
-// 		return;
-
-// 	do_the_splits(head, &a, &b, stack_a, stack_b);
-// 	// do_the_splits(stack_a, stack_b, 'b');
-	
-// 	super_cool_merge_stack_sort(&a, stack_a, stack_b);
-// 	super_cool_merge_stack_sort(&b, stack_a, stack_b);
-
-// 	where_the_actual_work_happens(a, b, stack_a, stack_b, sorted);
-// }
-
 t_list*	SortedMerge(t_list* a, t_list* b);
 void	FrontBackSplit(t_list* source, t_list** frontRef, t_list** backRef);
 
@@ -233,6 +145,7 @@ void	MergeSort(t_list** headRef)
 	// put back into da stacks here
 	// dont need no headref return, just pass a,b ez
 	*headRef = SortedMerge(a, b);
+	
 }
 
 /* See https:// www.geeksforgeeks.org/?p=3622 for details of this 
@@ -295,24 +208,89 @@ void	FrontBackSplit(t_list* source, t_list** frontRef, t_list** backRef)
 	slow -> next = NULL;
 }
 
+static	t_list *copy(t_list *head)
+{
+	t_list	*current;
+	t_list	*new_list;
+	t_list	*tail;
+
+	current = head;
+	new_list = NULL;
+	while (current != NULL)
+	{
+		if (new_list == NULL)
+		{
+			new_list = ft_lstnew(current->content);
+			tail = new_list;
+		}
+		else
+		{
+			tail->next = (t_list *)malloc(sizeof(t_list));
+			tail = tail->next;
+			tail->content = current->content;
+			tail->next = NULL;
+		}
+		current = current->next;
+	}
+	return (new_list);
+}
+
+int	get_nth(t_list *head, int index)
+{
+	t_list	*current;
+	int		count;
+
+	current = head;
+	count = 0;
+	while (current != NULL)
+	{
+		if (count == index)
+			return (current->content);
+		count++;
+		current = current->next;
+	}
+	return(-1);
+}
+
+void	indexer(t_list *stack_a)
+{
+	t_list	*sorted;
+	int		i;
+	
+	sorted = copy(stack_a);
+	//can be any func that sorts values
+	MergeSort(&sorted);
+	// for each value in stack_a, match with sorted and store the index
+	while (stack_a != NULL)
+	{
+		i = 0;
+		while (i < ft_lstsize(sorted))
+		{
+			if (stack_a->content == get_nth(sorted, i))
+				stack_a->index = i;
+			i++;
+		}
+		stack_a = stack_a->next;
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	t_list	**stack_a;
 	t_list	**stack_b;
-
+	// t_list	*indexed;
 	if (argc <= 1)
 		return (0);
 	stack_a = list_builder(argc, argv);
 	if (!stack_a)
 		return (return_error());
 	stack_b = malloc(sizeof(t_list));
-	printf("---------ENTRY STACK:-----------\n");
-	print_ll(*stack_a, *stack_b);
+	// printf("---------ENTRY STACK:-----------\n");
+	// print_ll(*stack_a, *stack_b);
 	
-	// super_cool_merge_stack_sort(stack_a, stack_b);
-	MergeSort(stack_a);
+	indexer(*stack_a);
 
-	printf("----------SECOND SORT:---------\n");
+	printf("----------INDEXED:---------\n");
 	print_ll(*stack_a, *stack_b);
 
 	delete_list(*stack_a);
@@ -447,4 +425,92 @@ int	main(int argc, char **argv)
 //     *frontRef = source;
 //     *backRef = slow->next;
 //     slow->next = NULL;
+// }
+
+// t_list	*tortoise_and_hare(t_list **stack)
+// {
+// 	t_list* fast;
+// 	t_list* slow;
+
+// 	slow = *stack;
+// 	fast = (*stack)->next;
+// 	/* Advance 'fast' two nodes, and advance 'slow' one node */
+// 	while (fast != NULL) 
+// 	{
+// 		fast = fast -> next;
+// 		if (fast != NULL) 
+// 		{
+// 			slow = slow -> next;
+// 			fast = fast -> next;
+// 		}
+// 	}
+// 	return (slow);
+// }
+
+// void	**do_the_splits(t_list *head, t_list **a, t_list **b, t_list **s_a, t_list **s_b)
+// {
+// 	t_list *mid;
+	
+// 	if (ab_flag == 'a')
+// 	{
+// 		mid = tortoise_and_hare(stack_a);
+// 		while (*stack_a != mid)
+// 			push_b(s_a, s_b);
+// 		return (stack_b);	
+// 	}
+// 	if (ab_flag == 'b')
+// 	{
+// 		mid = tortoise_and_hare(stack_b);
+// 		while (*stack_b != mid)
+// 			push_a(s_a, s_b);
+// 		return (stack_a);
+// 	}
+// 	// mid is the point to push to
+// 	// experimental code lmao
+// 	return (NULL);
+// }
+
+// void	where_the_actual_work_happens(t_list **stack_a, t_list **stack_b, int *sorted)
+// {
+// 	if (*stack_a == NULL)
+// 		return ;
+// 	if (*stack_b == NULL)
+// 		return ;
+	
+// 	if ((*stack_a)->content <= (*stack_b)->content)
+// 	{
+// 		rotate_a(stack_a, 0);
+// 		(*sorted)++;
+// 		where_the_actual_work_happens(stack_a, stack_b, sorted);
+// 	}
+// 	else
+// 	{
+// 		push_a(stack_a, stack_b);
+// 		rotate_a(stack_a, 0);
+// 		(*sorted)++;
+// 		where_the_actual_work_happens(stack_a, stack_b, sorted);
+// 	}
+		
+// }
+
+// void	super_cool_merge_stack_sort(t_list **copy_head)
+// {
+// 	t_list* head = *headRef;
+// 	t_list* a;
+// 	t_list* b;
+	
+// 	// sorted = NULL;
+// 	// // 2 just because base case stuff, will change later smile
+// 	// if (sorted && (*sorted > (ft_lstsize(*stack_a) + ft_lstsize(*stack_b) - 2)))
+// 	// 	return ;
+// 	if ((head == NULL) || (head->next == NULL))
+// 		return;
+
+// 	do_the_splits(head, &a, &b, stack_a, stack_b);
+// 	// do_the_splits(stack_a, stack_b, 'b');
+	
+// 	super_cool_merge_stack_sort(&a, stack_a, stack_b);
+// 	super_cool_merge_stack_sort(&b, stack_a, stack_b);
+
+// 	where_the_actual_work_happens(a, b, stack_a, stack_b, sorted);
 // }

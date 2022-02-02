@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   checker.c                                          :+:      :+:    :+:   */
+/*   fresh_algo.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/02 13:45:19 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/02 11:46:30 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,40 +62,6 @@ t_list	**list_builder(int argc, char **argv)
 	}
 	return (stack_a);
 }
-
-void	indexer(t_list **head)
-{
-	int		*indexes;
-	int 	temp;
-	int		i;
-	int		input_size;
-	
-	input_size = ft_lstsize(*head);
-	indexes = malloc(input_size * sizeof(int));
-	i = 1;
-	temp = 0;
-	
-	while ((*head)->next)
-	{
-		if ((*head)->content < (*head)->next->content)
-		{
-			*indexes = i;
-		}
-		if ((*head)->content > (*head)->next->content)
-		{
-			
-			temp = (*head)->content;
-		}
-		if ((*head)->next->content > temp)
-			// (*head)->next->index = i;
-			
-		(*head) = (*head)->next;
-	}
-	// (*head)->next->index = i;
-	
-}
-
-// 		else if ((*stack_a)->content > (*stack_a)->next->content)
 
 int	return_error(void)
 {
@@ -231,67 +197,94 @@ t_list	*reverse_list(t_list **head)
 	return(prev);
 }
 
+void	max_run(t_list **head)
+{
+	int		i;
+	int 	run_start;
+	int		run_end;
+	t_list	*temp;
+
+	temp = head;
+	i = 0;
+	run_len = 0;
+	temp_run = 0;
+	while (temp->next != NULL)
+	{	
+		while (((temp->content) < (temp->next->content))
+		{
+			run_start = i;
+			temp_run++;
+			if (run_len < temp_run)
+			{
+				run_len = temp_run;
+				state->run_start = run_start;
+				state->run_end = i;
+			}
+			else
+				temp_run = 0;
+		last_val  = temp->content;
+		temp = temp->next;
+		i++;
+		// reset back to start to loop
+		if (temp == NULL)
+			temp = head;
+	}
+}
+
 // static void move_maker(int target, t_list **stack_a)
 // {
-// 	int i;
-// 	int j;
-// 	t_list *totally_different_list;
-	
-// 	i = 0;
-// 	totally_different_list = *stack_a;
-// 	while (totally_different_list->content != target)
-// 	{
-// 		rotate_a(&totally_different_list, 0);
-// 		i++;
-// 	}
-// 	j = 0;
-// 	totally_different_list = *stack_a;
-// 	while (totally_different_list->content != target)
-// 	{
-// 		reverse_rotate_a(&totally_different_list, 0);
-// 		j++;
-// 	}
-// 	if (i < j)
-// 	{
-// 		while ((*stack_a)->content != target)
-// 			rotate_a(stack_a, 0);
-// 	}
-// 	else
-// 		while ((*stack_a)->content != target)
-// 			reverse_rotate_a(stack_a, 0);
+
 // }
 
 static void	move_vals(t_list **stack_b, t_list **stack_a, t_state *state)
 {
 	t_list *order;
-	// t_list *holder_pointer;
-
+	t_list *holder_pointer;
+	int i;
+	char *ins_b;
+	char *ins_a;
 	//lets just reverse at the start
 	if (state->active == 0)
 		order = *(state->order);
 	else
 		order = reverse_list(*&(state->order));
+	printf("Len: %d Starting width: %d\n", state->a_len, state->width);
+	i = 0;
+	if (state->width == 2 && state->a_len > 3)
+	{
+		while (i++ <= (state->a_len / 2))
+			push_b(stack_a, stack_b);
+	}
+
+		
+	// now need to split up the order into the same chunks for operations?
+	
+
 	while (order != NULL)
 	{
-		if (state->active == 0)
-		{
-			// looking to match the values here,
-			// need to find the difference between them to know what move to do.
-			while ((*stack_a)->content != order->content)
-				rotate_a(stack_a, 0);
+		if ((state->width < state->a_len) && state->a_len > 3)
+			printf("order?: %d\n", order->content);
+		order = order->next;
+
+	// 	if (state->active == 0)
+	// 	{
+	// 		// looking to match the values here,
+	// 		// need to find the difference between them to know what move to do.
+	// 		while ((*stack_a)->content != order->content)
+	// 			rotate_a(stack_a, 0);
 			
-			// move_maker(order->content, stack_a);
+	// 		// move_maker(order->content, stack_a);
 			
-			order = order->next;
-			push_b(stack_a, stack_b);
-		}
-		else
-		{
-			while ((*stack_b)->content != order->content)
-				rotate_b(stack_b, 0);
-			order = order->next;
-			push_a(stack_a, stack_b);
-		}
+	// 		order = order->next;
+	// 		push_b(stack_a, stack_b);
+	// 	}
+	// 	else
+	// 	{
+	// 		while ((*stack_b)->content != order->content)
+	// 			rotate_b(stack_b, 0);
+	// 		order = order->next;
+	// 		push_a(stack_a, stack_b);
+	// 	}
 	}
 }
 
@@ -322,71 +315,11 @@ static	t_list *copy(t_list *head)
 	return (new_list);
 }
 
-static void	merge(int i, t_state *state)
-{
-	int			j;
-	int			k;
-	t_list	*temp;
-
-	j = state->i_right;
-	k = i - 1;
-	temp = state->temp;
-	while (++k < state->i_end)
-	{
-		if (i < state->i_right && (j >= state->i_end || get_nth(temp, i) < get_nth(temp, j)))
-		{
-			if (*(state->order) == NULL)
-				*(state->order) = ft_lstnew(get_nth(temp, i++));
-			else
-				ft_lstadd_back(state->order, ft_lstnew(get_nth(temp, i++)));
-		}
-		else
-		{
-			if (*(state->order) == NULL)
-				*(state->order) = ft_lstnew(get_nth(temp, j++));
-			else
-				ft_lstadd_back(state->order, ft_lstnew(get_nth(temp, j++)));
-		}
-	}
-}
 
 void	sortver(t_list **stack_a, t_list **stack_b)
 {
 	t_state	*state;
-	int		a_len;
-	int		width;
-	int		i;
-	t_list	**order;
-	
-	state = malloc(sizeof(t_state));
-	a_len = ft_lstsize(*stack_a);
-	width = 1;
-	order = malloc(sizeof(t_list));
-	state->order = order;
-	state->active = 0;
-	while (width < a_len)
-	{
-		i = 0;
-		if (!state->active)
-			state->temp = copy(*stack_a);
-		else
-			state->temp = reverse_list(stack_b);
-		while (i < a_len)
-		{
-			state->i_right = min((i + width), a_len);
-			state->i_end = min((i + 2 * width), a_len);
-			merge(i, state);
-			i = i + 2 * width;
-		}
-		width = 2 * width;
-		move_vals(stack_b, stack_a, state);
-		if (state->active == 0)
-			state->active = 1;
-		else
-			state->active = 0;
-		*(state->order) = NULL;
-	}
-	// printf("End active val: %i", state->active);
+
 }
 
 int	main(int argc, char **argv)
@@ -402,12 +335,12 @@ int	main(int argc, char **argv)
 	stack_b = malloc(sizeof(t_list));
 	// printf("---------ENTRY STACK:-----------\n");
 	// print_ll(*stack_a, *stack_b);
-	indexer(stack_a);
+
 	// char	*instruction;
 	// while (1)
 	// {
 	
-	// sortver(stack_a, stack_b);
+	sortver(stack_a, stack_b);
 
 	// instruction = get_next_line(0);
 	// if (instruction == NULL)
@@ -669,31 +602,3 @@ int	main(int argc, char **argv)
 // 	return (max);
 // }
 
-// int max_run(t_list *head)
-// {
-// 	int 	run_len;
-// 	int		temp_run;
-// 	int		last_val;
-// 	t_list	*temp;
-
-// 	temp = head;
-// 	run_len = 0;
-// 	temp_run = 0;
-// 	while (temp->next != NULL)
-// 	{	
-// 		if (((temp->content) - (temp->next->content)) == -1)
-// 		{
-// 			temp_run++;
-// 			if (run_len < temp_run)
-// 				run_len = temp_run;
-// 		}
-// 		else
-// 			temp_run = 0;
-// 		last_val  = temp->content;
-// 		temp = temp->next;
-// 	}
-// 	if ((temp->next == NULL) && (last_val - (temp->content)) == -1)
-// 		run_len++;
-
-// 	return (run_len);
-// }
