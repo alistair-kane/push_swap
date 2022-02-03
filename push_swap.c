@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/03 01:44:45 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/03 12:38:34 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,64 +240,59 @@ void	indexer(t_list *stack_a)
 	}
 }
 
-void	max_run(t_list *head)
+void	max_run(t_list **head)
 {
 	t_list	*temp;
 	int		run_start;
 	int		run_end;
 	int		len;
-	int		max;
+	int		max_len;
 	int		i;
-	// int		temp_run;
-	// int		last_val;
 	
-	temp = head;
-	ft_lstadd_back(&temp, copy(head));
+	temp = copy(*head);
+	ft_lstadd_back(&temp, copy(*head));
 	i = 0;
 	len = 1;
-	max = 1;
-	while (temp->next != NULL)
+	max_len = 1;
+	while ((temp)->next != NULL)
 	{
-		if (temp->next->content > temp->content)
-		{
+		if ((temp)->next->content > (temp)->content)
 			len++;
-		}
 		else
 		{
-			if (max < len)
+			if (max_len <= len)
 			{
-				max = len;
-				run_start = i - max;
+				max_len = len;
+				run_start = i - max_len + 1;
 				run_end = i;
 			}
 			len = 1;
 		}
 		i++;
-	// 	printf(" %d ",temp->content);
-		temp = temp->next;
+		temp = (temp)->next;
 	}
-	// run_start = run_end - max;
-	printf("Run start:%d | Run end:%d",run_start,run_end);
-	// run_len = 0;
-	// temp_run = 0;
-	// while (temp->next != NULL)
-	// {	
-	// 	if (((temp->content) - (temp->next->content)) == -1)
-	// 	{
-	// 		temp_run++;
-	// 		if (run_len < temp_run)
-	// 			run_len = temp_run;
-	// 	}
-	// 	else
-	// 		temp_run = 0;
-	// 	last_val  = temp->content;
-	// 	temp = temp->next;
-	// }
-	// if ((temp->next == NULL) && (last_val - (temp->content)) == -1)
-	// 	run_len++;
-
-	// return (run_len);
+	// circular
+	if (run_end >= ft_lstsize(*head))
+		run_end = run_end - ft_lstsize(*head);
+	if (run_start >= ft_lstsize(*head))
+		run_start = run_start - ft_lstsize(*head);
+	
+	printf("Lower idx:%d | Upper idx:%d\n", run_start, run_end);
+	printf("Run lower:%d | Run upper:%d", get_nth(*head, run_start), get_nth(*head, run_end));
+	printf("\nLen: %d\n", max_len);
 }
+
+void	solver(t_list **stack_a, t_list **stack_b)
+{
+	while (max_run(stack_a) < ft_lstsize(*stack_a))
+	{
+		if (*)
+	}
+}
+
+// if a value fits into the range given by the run lowest and greater element of stack_b, push into stack b
+
+// for value in stack b, check the moves to put in the right positon in the run
 
 int	main(int argc, char **argv)
 {
@@ -309,7 +304,7 @@ int	main(int argc, char **argv)
 	if (!stack_a)
 		return (return_error());
 	stack_b = malloc(sizeof(t_list));
-	max_run(*stack_a);
+	max_run(stack_a);
 	
 	// indexer(*stack_a);
 	// printf("----------INDEXED:---------\n");
