@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/01/31 17:34:51 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/03 22:40:23 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,10 @@ void	double_reverse_rotate(t_list **head_a, t_list **head_b);
 
 typedef struct s_state
 {
-	t_list	*temp;
-	t_list	**order;
-	int		i_right;
-	int		i_end;
-	int		active;
-	int		width;
-	int		a_len;
+	int		run_start;
+	int		run_end;
+	int		len;
+	// int		max_len;
 }	t_state;
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/03 12:38:34 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/04 00:01:00 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,51 +240,52 @@ void	indexer(t_list *stack_a)
 	}
 }
 
-void	max_run(t_list **head)
+int	max_run(t_list **head, t_state *state)
 {
 	t_list	*temp;
-	int		run_start;
-	int		run_end;
-	int		len;
 	int		max_len;
+	int		temp_len;
 	int		i;
 	
 	temp = copy(*head);
 	ft_lstadd_back(&temp, copy(*head));
 	i = 0;
-	len = 1;
+	temp_len = 1;
 	max_len = 1;
 	while ((temp)->next != NULL)
 	{
 		if ((temp)->next->content > (temp)->content)
-			len++;
+			temp_len++;
 		else
 		{
-			if (max_len <= len)
+			if (max_len <= temp_len)
 			{
-				max_len = len;
-				run_start = i - max_len + 1;
-				run_end = i;
+				max_len = temp_len;
+				state->run_start = i - max_len + 1;
+				state->run_end = i;
 			}
-			len = 1;
+			temp_len = 1;
 		}
 		i++;
 		temp = (temp)->next;
 	}
 	// circular
-	if (run_end >= ft_lstsize(*head))
-		run_end = run_end - ft_lstsize(*head);
-	if (run_start >= ft_lstsize(*head))
-		run_start = run_start - ft_lstsize(*head);
-	
-	printf("Lower idx:%d | Upper idx:%d\n", run_start, run_end);
-	printf("Run lower:%d | Run upper:%d", get_nth(*head, run_start), get_nth(*head, run_end));
+	if (state->run_end >= ft_lstsize(*head))
+		state->run_end = state->run_end - ft_lstsize(*head);
+	if (state->run_start >= ft_lstsize(*head))
+		state->run_start = state->run_start - ft_lstsize(*head);
+	printf("Lower idx:%d | Upper idx:%d\n", state->run_start, state->run_end);
+	printf("Run lower:%d | Run upper:%d", get_nth(*head, state->run_start), get_nth(*head, state->run_end));
 	printf("\nLen: %d\n", max_len);
+	return (max_len)
 }
 
 void	solver(t_list **stack_a, t_list **stack_b)
 {
-	while (max_run(stack_a) < ft_lstsize(*stack_a))
+	t_state	*state;
+	
+	state = malloc(sizeof(t_state));
+	while (max_run(*stack_a) < ft_lstsize(*stack_a))
 	{
 		if (*)
 	}
