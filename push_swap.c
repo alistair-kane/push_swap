@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/04 20:27:50 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/05 16:28:11 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ void swap(t_list *a, t_list *b)
 void bubble_sort(t_list *start)
 {
 	int swapped;
-	int i;
 	t_list *ptr1;
 	t_list *lptr;
 	
@@ -225,6 +224,9 @@ void	indexer(t_list *stack_a)
 	}
 }
 
+
+
+
 int	max_run(t_list **head, t_state *state)
 {
 	t_list	*temp;
@@ -276,13 +278,12 @@ void	solver(t_list **stack_a, t_list **stack_b)
 	
 	printf("----------b4:---------\n");
 	print_ll(*stack_a, *stack_b);
-	// while (max_run(stack_a, state) < (ft_lstsize(*stack_a))
+	// while (max_run(stack_a, state) < (ft_lstsize(*stack_a) || ft_lstsize(*stack_b))
 	int i = 0;
-	while (i < 30)
+	while (i < 100)
 	{
 		printf("run len %d\n", max_run(stack_a, state));
 		// state is updated each while loop iteration
-		
 		// if the run starts at the first index should be shifted down
 		if (state->run_start == 0)
 		{
@@ -296,11 +297,23 @@ void	solver(t_list **stack_a, t_list **stack_b)
 			else
 				rotate_a(stack_a, 0);
 		}
+		// else if ((*stack_a)->index > (*stack_a)->next->index && state->run_end > 2)
+		// 	swap_a(stack_a, 0);
 		// only if the value isnt part of the run and
-		else if (state->run_start > 0)
-			push_b(stack_a, stack_b);
+		else if (ft_lstsize(*stack_a) > 2)
+		{
+			if (((*stack_a)->next->next->index - (*stack_a)->index) == 1)
+				swap_a(stack_a, 0);
+			else
+				push_b(stack_a, stack_b);
+		}
+
+		// else if (state->run_start > 0)
+		// 	push_b(stack_a, stack_b);
 		printf("----------dannach:---------\n");
 		print_ll(*stack_a, *stack_b);
+		// if
+
 		i++;
 	}
 }
