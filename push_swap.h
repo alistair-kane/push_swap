@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/02/04 14:51:55 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/06 02:54:27 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,12 @@ void	double_reverse_rotate(t_list **head_a, t_list **head_b);
 
 typedef struct s_state
 {
-	int		run_start;
-	int		run_end;
-	int		len;
+	int	run_start;
+	int	run_end;
+	int	len;
+	int	reverse;
+	int	a_moves;
+	int	b_moves;
 }	t_state;
 
 #endif
