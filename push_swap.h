@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/02/06 02:54:27 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/10 01:15:40 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,10 @@ typedef struct s_state
 	int	run_start;
 	int	run_end;
 	int	len;
-	int	reverse;
 	int	a_moves;
 	int	b_moves;
+	
+	int lowest_moves;
 }	t_state;
 
 #endif
