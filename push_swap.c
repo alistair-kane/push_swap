@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/11 01:47:40 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/11 16:20:11 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -495,8 +495,10 @@ void	stack_b_ops(t_list **stack_a, t_list **stack_b, t_state *state)
 void	solver(t_list **stack_a, t_list **stack_b)
 {
 	t_state	*state;
-
+	int		total_len;
+	
 	state = malloc(sizeof(t_state));
+	total_len = ft_lstsize(*stack_a);
 	// printf("Nothing:\n");
 	// printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
 	
@@ -511,9 +513,15 @@ void	solver(t_list **stack_a, t_list **stack_b)
 	{
 		if (ft_lstsize(*stack_b))
 			stack_b_ops(stack_a, stack_b, state);
-		if (ft_lstsize(*stack_a) == max_run(stack_a, state))// || state->run_start == 0)
+		if (ft_lstsize(*stack_a) == max_run(stack_a, state) && ft_lstsize(*stack_b))// || state->run_start == 0)
 		{
-			reverse_rotate_a(stack_a, 0);
+			if (get_nth_idx(*stack_b, ft_lstsize(*stack_b) - 1) > (total_len / 2))
+			{
+				printf("last b val:%d\n", get_nth_idx(*stack_b, ft_lstsize(*stack_b) - 1));
+				double_reverse_rotate(stack_a, stack_b);
+			}
+			else
+				reverse_rotate_a(stack_a, 0);
 			// state->lowest_moves = 5;
 		}
 		else if (state->run_start == 0)
@@ -532,8 +540,8 @@ void	solver(t_list **stack_a, t_list **stack_b)
 			else
 				push_b(stack_a, stack_b);
 		}
-		printf("----------\"memory leak galore\":---------\n");
-		print_ll(*stack_a, *stack_b);
+		// printf("----------\"memory leak galore\":---------\n");
+		// print_ll(*stack_a, *stack_b);
 	}
 	insert_pos(-1, stack_a, stack_b, state);
 	while (get_nth_idx(*stack_a, 0) != 0)
@@ -572,6 +580,8 @@ int	main(int argc, char **argv)
 	free(stack_b);
 	return (0);
 }
+
+// | awk '{for(i=1;i<=NF;i++)a[$i]++}END{for(o in a) printf "%s %s ",o,a[o]}'
 
 // // printf("A: %d, B: %d\n", a, b);
 // if (a_ > (ft_lstsize(*stack_a) / 2))
