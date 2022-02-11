@@ -109,4 +109,54 @@ int longlenCircularSubarr(int arr[], int n)
  
     return max;
 }
- 
+
+
+int	max_run(t_list **head, t_state *state)
+{
+	t_list	*temp;
+	int		temp_len;
+	int		i;
+	int     n;
+
+    int j;
+    int k;
+
+    temp = *head;
+	i = 0;
+    j = 0;
+    k = 1;
+    n = ft_lstsize(temp);
+	temp_len = 1;
+	state->len = 1;
+	while (i < (n * 2))
+	{
+		if (get_nth_idx(temp, j) < get_nth_idx(temp, k))
+			temp_len++;
+		else
+		{
+			if (state->len <= temp_len)
+			{
+				state->len = temp_len;
+				state->run_start = i - state->len + 1;
+				state->run_end = i;
+			}
+			temp_len = 1;
+		}
+		if (k == n)
+			k = 0;
+		if (j == n)
+			j = 1;
+		i++;
+        j++;
+        k++;
+	}
+	// circular
+	if (state->run_end >= ft_lstsize(*head))
+		state->run_end = state->run_end - ft_lstsize(*head);
+	if (state->run_start >= ft_lstsize(*head))
+		state->run_start = state->run_start - ft_lstsize(*head);
+	// printf("Lower idx:%d | Upper idx:%d\n", state->run_start, state->run_end); 	// printf("\nLen: %d\n", state->len);
+	// printf("Run lower:%d | Run upper:%d", get_nth(*head, state->run_start), get_nth(*head, state->run_end));
+	// printf("\nLen: %d\n", state->len);
+	return (state->len);
+}

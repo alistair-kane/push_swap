@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/10 17:17:25 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/11 01:47:40 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ t_list	*print_gne(t_list *node, int *holder)
 	else
 		// *holder = node->content;
 		*holder = node->index;
+	free(empty);
 	return (node);
 }
 
@@ -259,126 +260,43 @@ void	indexer(t_list *stack_a)
 
 int	max_run(t_list **head, t_state *state)
 {
-	t_list	*temp;
-	int		temp_len;
-	int		i;
-	
-	temp = copy(*head);
-	ft_lstadd_back(&temp, copy(*head));
-	i = 0;
+	int	i;
+	int	j;
+	int	k;
+	int	n;
+	int	temp_len;
+
+	i = -1;
+	j = 0;
+	k = 1;
+	n = ft_lstsize(*head);
 	temp_len = 1;
 	state->len = 1;
-	while ((temp)->next != NULL)
+	while (++i < (n * 2))
 	{
-		if ((temp)->next->index > (temp)->index)
+		if (get_nth_idx(*head, j++) < get_nth_idx(*head, k++))
 			temp_len++;
 		else
 		{
-			if (state->len <= temp_len)
+			if (state->len < temp_len)
 			{
 				state->len = temp_len;
-				state->run_start = i - state->len + 1;
+				state->run_start = i - (state->len - 1);
 				state->run_end = i;
 			}
 			temp_len = 1;
 		}
-		i++;
-		temp = (temp)->next;
-	}
-	// circular
-	if (state->run_end >= ft_lstsize(*head))
-		state->run_end = state->run_end - ft_lstsize(*head);
-	if (state->run_start >= ft_lstsize(*head))
-		state->run_start = state->run_start - ft_lstsize(*head);
-	// printf("Lower idx:%d | Upper idx:%d\n", state->run_start, state->run_end); 	// printf("\nLen: %d\n", state->len);
-	// printf("Run lower:%d | Run upper:%d", get_nth(*head, state->run_start), get_nth(*head, state->run_end));
-	// printf("\nLen: %d\n", state->len);
-	free(temp);
-	return (state->len);
-}
-
-int	max_run2(t_list **head, t_state *state)
-{
-	t_list  *temp;
-	int n;
-	int start_len;
-	int i;
-	int j;
-	int k;
-	int l;
-	int len;
-	int max;
-
-	temp = *head;
-	n = ft_lstsize(temp);
-	
-	if (n == 1)
-	{
-		state->run_start = 0;
-		state->run_end = 1;
-		state->len = 1;
-		return (state->len);
-	}
-	start_len = 1;
-	i = 1;
-	while (get_nth_idx(temp, i - 1) < get_nth_idx(temp, i) && i < n)
-	{
-		start_len++;
-		i++;
-	}
-	max = start_len;
-	j = 0;
-	k = i + 1;
-	l = 0;
-	len = 1;
-	// while (j < n)
-	while (l < (n * 2))
-	{
-		if (get_nth_idx(temp, j) < get_nth_idx(temp, k))
-			len++;
-		else
-		{
-			if (max <= len)
-			{
-				max = len;
-				state->run_start = k - len;
-				state->run_end = k - 1;
-				// if (get_nth_idx(temp, j + 1) == -1)
-				// 	break;
-			}
-			len = 1;
-		}
-		// resets yo
 		if (k == n)
 			k = 0;
 		if (j == n)
 			j = 0;
-		j++;
-		k++;
-		l++;
 	}
-	// printf("len b4: %d\n", len);
-	// printf("max b4: %d\n", max);
-	if (get_nth_idx(temp, n - 1) < get_nth_idx(temp, 0))
-	{
-		// printf("loop detected\n");
-		if (max < (len + start_len))
-		{
-			state->run_start = n - len;
-			state->len = len + start_len;
-			state->run_end = start_len - 1;
-		}
-	}
-	else
-		state->len = max_of(max, len);
-	// // circular
-	// if (state->run_end >= n)
-	// 	state->run_end = state->run_end - n;
-	// if (state->run_start >= n)
-	// 	state->run_start = state->run_start - n;
+	if (state->run_end >= n)
+		state->run_end = state->run_end - n;
+	if (state->run_start >= n)
+		state->run_start = state->run_start - n;
 	return (state->len);
 }
-
 
 void	insert_pos(int val, t_list **stack_a, t_list **stack_b, t_state *state)
 {
@@ -444,7 +362,7 @@ void	stack_b_ops(t_list **stack_a, t_list **stack_b, t_state *state)
 		b_rotate = state->b_moves;
 		a_reverse = ft_lstsize(*stack_a) - a_rotate;
 		b_reverse = ft_lstsize(*stack_b) - b_rotate;
-		if ((min(b_rotate, b_reverse) + min(a_rotate, a_reverse)) < 8)
+		if ((min(b_rotate, b_reverse) + min(a_rotate, a_reverse)) < state->lowest_moves + 1)
 		{
 			if (a_rotate < a_reverse && b_rotate < b_reverse)
 			{
@@ -518,7 +436,7 @@ void	stack_b_ops(t_list **stack_a, t_list **stack_b, t_state *state)
 			push_a(stack_a, stack_b);
 			return ;
 		}
-		else if (min(a_rotate, a_reverse) < 6)
+		else if (min(a_rotate, a_reverse) < state->lowest_moves)
 		{
 			if (min(a_rotate, a_reverse) > ft_lstsize(*stack_b) 
 			|| min(a_rotate, a_reverse) >= max_of(b_rotate, b_reverse))
@@ -544,7 +462,7 @@ void	stack_b_ops(t_list **stack_a, t_list **stack_b, t_state *state)
 				return ;
 			}
 		}
-		else if (min(b_rotate, b_reverse) < 6)
+		else if (min(b_rotate, b_reverse) < state->lowest_moves)
 		{
 			if (min(b_rotate, b_reverse) > ft_lstsize(*stack_a) 
 			|| min(b_rotate, b_reverse) >= max_of(a_rotate, a_reverse))
@@ -574,50 +492,57 @@ void	stack_b_ops(t_list **stack_a, t_list **stack_b, t_state *state)
 	}
 }
 
-void	solver(t_list **stack_a)//, t_list **stack_b)
+void	solver(t_list **stack_a, t_list **stack_b)
 {
 	t_state	*state;
 
 	state = malloc(sizeof(t_state));
-	printf("Nothing:\n");
-	printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
+	// printf("Nothing:\n");
+	// printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
 	
-	max_run(stack_a, state);
-	printf("Orig:\n");
-	printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
-	
-	max_run2(stack_a, state);
-	printf("New:\n");
-	printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
-	// while ((max_run(stack_a, state) < ft_lstsize(*stack_a)) || ft_lstsize(*stack_b))
-	// {
-	// 	if (ft_lstsize(*stack_b))
-	// 		stack_b_ops(stack_a, stack_b, state);
-	// 	if (ft_lstsize(*stack_a) == max_run(stack_a, state) || state->run_start == 0)
-	// 		reverse_rotate_a(stack_a, 0);
-	// 	else if (state->run_end < state->len)
-	// 	{
-	// 		if (state->run_end > (ft_lstsize(*stack_a) - state->run_start))
-	// 			reverse_rotate_a(stack_a, 0);
-	// 		else
-	// 			rotate_a(stack_a, 0);
-	// 	}
-	// 	else if (ft_lstsize(*stack_a) > 2)
-	// 	{
-	// 		if (((*stack_a)->next->next->index - (*stack_a)->index) == 1)
-	// 			swap_a(stack_a, 0);
-	// 		else
-	// 			push_b(stack_a, stack_b);
-	// 	}
-	// }
-	// insert_pos(-1, stack_a, stack_b, state);
-	// while (get_nth_idx(*stack_a, 0) != 0)
-	// {
-	// 	if ((ft_lstsize(*stack_a) - state->a_moves) > state->a_moves)
-	// 		rotate_a(stack_a, 0);
-	// 	else
-	// 		reverse_rotate_a(stack_a, 0);
-	// }
+	// max_run(stack_a, state);
+	// printf("Orig:\n");
+	// printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
+	state->lowest_moves = 4;
+	// max_run2(stack_a, state);
+	// printf("New:\n");
+	// printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
+	while ((max_run(stack_a, state) < ft_lstsize(*stack_a)) || ft_lstsize(*stack_b))
+	{
+		if (ft_lstsize(*stack_b))
+			stack_b_ops(stack_a, stack_b, state);
+		if (ft_lstsize(*stack_a) == max_run(stack_a, state))// || state->run_start == 0)
+		{
+			reverse_rotate_a(stack_a, 0);
+			// state->lowest_moves = 5;
+		}
+		else if (state->run_start == 0)
+			reverse_rotate_a(stack_a, 0);
+		else if (state->run_end < state->len)
+		{
+			if (state->run_end > (ft_lstsize(*stack_a) - state->run_start))
+				reverse_rotate_a(stack_a, 0);
+			else
+				rotate_a(stack_a, 0);
+		}
+		else if (ft_lstsize(*stack_a) > 2)
+		{
+			if (((*stack_a)->next->next->index - (*stack_a)->index) == 1)
+				swap_a(stack_a, 0);
+			else
+				push_b(stack_a, stack_b);
+		}
+		printf("----------\"memory leak galore\":---------\n");
+		print_ll(*stack_a, *stack_b);
+	}
+	insert_pos(-1, stack_a, stack_b, state);
+	while (get_nth_idx(*stack_a, 0) != 0)
+	{
+		if ((ft_lstsize(*stack_a) - state->a_moves) > state->a_moves)
+			rotate_a(stack_a, 0);
+		else
+			reverse_rotate_a(stack_a, 0);
+	}
 	free(state);
 }
 
@@ -627,24 +552,24 @@ void	solver(t_list **stack_a)//, t_list **stack_b)
 int	main(int argc, char **argv)
 {
 	t_list	**stack_a;
-	// t_list	**stack_b;
+	t_list	**stack_b;
 	if (argc <= 1)
 		return (0);
 	stack_a = list_builder(argc, argv);
 	if (!stack_a)
 		return (return_error());
-	// stack_b = malloc(sizeof(t_list));
+	stack_b = malloc(sizeof(t_list));
 	
 	indexer(*stack_a);
-	solver(stack_a);//, stack_b);
+	solver(stack_a, stack_b);
 	
-	// printf("----------\"solved\":---------\n");
-	// print_ll(*stack_a, *stack_b);
+	printf("----------\"solved\":---------\n");
+	print_ll(*stack_a, *stack_b);
 
 	delete_list(*stack_a);
-	// delete_list(*stack_b);
+	delete_list(*stack_b);
 	free(stack_a);
-	// free(stack_b);
+	free(stack_b);
 	return (0);
 }
 
@@ -818,4 +743,125 @@ int	main(int argc, char **argv)
 // 	while (b_reverse--)
 // 		i++;
 // 	return (i);
+// }
+// int	max_run(t_list **head, t_state *state)
+// {
+// 	t_list	*temp;
+// 	int		temp_len;
+// 	int		i;
+	
+// 	temp = copy(*head);
+// 	ft_lstadd_back(&temp, copy(*head));
+// 	i = 0;
+// 	temp_len = 1;
+// 	state->len = 1;
+// 	while ((temp)->next != NULL)
+// 	{
+// 		if ((temp)->next->index > (temp)->index)
+// 			temp_len++;
+// 		else
+// 		{
+// 			if (state->len <= temp_len)
+// 			{
+// 				state->len = temp_len;
+// 				state->run_start = i - state->len + 1;
+// 				state->run_end = i;
+// 			}
+// 			temp_len = 1;
+// 		}
+// 		i++;
+// 		temp = (temp)->next;
+// 	}
+// 	// circular
+// 	if (state->run_end >= ft_lstsize(*head))
+// 		state->run_end = state->run_end - ft_lstsize(*head);
+// 	if (state->run_start >= ft_lstsize(*head))
+// 		state->run_start = state->run_start - ft_lstsize(*head);
+// 	// printf("Lower idx:%d | Upper idx:%d\n", state->run_start, state->run_end); 	// printf("\nLen: %d\n", state->len);
+// 	// printf("Run lower:%d | Run upper:%d", get_nth(*head, state->run_start), get_nth(*head, state->run_end));
+// 	// printf("\nLen: %d\n", state->len);
+// 	free(temp);
+// 	return (state->len);
+// }
+
+// int	max_run2(t_list **head, t_state *state)
+// {
+// 	t_list  *temp;
+// 	int n;
+// 	int start_len;
+// 	int i;
+// 	int j;
+// 	int k;
+// 	int l;
+// 	int len;
+// 	int max;
+
+// 	temp = *head;
+// 	n = ft_lstsize(temp);
+	
+// 	if (n == 1)
+// 	{
+// 		state->run_start = 0;
+// 		state->run_end = 1;
+// 		state->len = 1;
+// 		return (state->len);
+// 	}
+// 	start_len = 1;
+// 	i = 1;
+// 	while (get_nth_idx(temp, i - 1) < get_nth_idx(temp, i) && i < n)
+// 	{
+// 		start_len++;
+// 		i++;
+// 	}
+// 	max = start_len;
+// 	j = 0;
+// 	k = i + 1;
+// 	l = 0;
+// 	len = 1;
+// 	// while (j < n)
+// 	while (l < (n * 2))
+// 	{
+// 		if (get_nth_idx(temp, j) < get_nth_idx(temp, k))
+// 			len++;
+// 		else
+// 		{
+// 			if (max <= len)
+// 			{
+// 				max = len;
+// 				state->run_start = k - len;
+// 				state->run_end = k - 1;
+// 				// if (get_nth_idx(temp, j + 1) == -1)
+// 				// 	break;
+// 			}
+// 			len = 1;
+// 		}
+// 		// resets yo
+// 		if (k == n)
+// 			k = 0;
+// 		if (j == n)
+// 			j = 0;
+// 		j++;
+// 		k++;
+// 		l++;
+// 	}
+// 	// printf("len b4: %d\n", len);
+// 	// printf("max b4: %d\n", max);
+// 	if (get_nth_idx(temp, n - 1) < get_nth_idx(temp, 0))
+// 	{
+// 		// printf("loop detected\n");
+// 		if (max < (len + start_len))
+// 		{
+// 			state->run_start = n - len;
+// 			state->len = len + start_len;
+// 			state->run_end = start_len - 1;
+// 		}
+// 	}
+// 	else
+// 		state->len = max_of(max, len);
+// 	// // circular
+// 	// if (state->run_end >= n)
+// 	// 	state->run_end = state->run_end - n;
+// 	// if (state->run_start >= n)
+// 	// 	state->run_start = state->run_start - n;
+// 	return (state->len);
 // }

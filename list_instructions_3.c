@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list_instructions_3.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/15 16:49:34 by alkane            #+#    #+#             */
-/*   Updated: 2022/02/09 22:58:22 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/10 23:03:51 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	reverse_rotate_b(t_list **head_b, int double_flag)
 	last->next = *head_b;
 	*head_b = last;
 	if (!double_flag)
-		write(1, "___\n", 4);
+		write(1, "rrb\n", 4);
 }
 
 void	double_reverse_rotate(t_list **head_a, t_list **head_b)
