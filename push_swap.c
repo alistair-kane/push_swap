@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/11 16:20:11 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/12 03:42:27 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,7 +341,45 @@ void	insert_pos(int val, t_list **stack_a, t_list **stack_b, t_state *state)
 	state->b_moves = i;
 }
 
-void	stack_b_ops(t_list **stack_a, t_list **stack_b, t_state *state)
+int	find_bin(int val, t_list **stack_b)
+{
+	int i
+	int j;
+	int bin_size;
+	unsigned int lower;
+	int upper;
+	
+	i = 0;
+	j = 0;
+	lower = 0;
+	upper = bin_size;
+	while(i < ft_lstsize(*stack_b))
+	{
+		j = get_nth_idx()
+		if (val >= lower && val <= upper)
+		
+		lower += bin_size;
+		upper += bin_size;
+	}
+}
+
+void	stack_b_import(t_list **stack_a, t_list **stack_b, t_state *state)
+{
+	int	b_size;
+	int i;
+	
+	b_size = ft_lstsize(*stack_b);
+	i - 0;
+	while (i < ft_lstsize(*stack_a))
+	{
+		if (!b_size)
+			b_moves = 0;
+		else
+		{
+			b_moves = find_bin(get_nth_idx(*stack_a, i))
+		}
+}
+void	stack_b_export(t_list **stack_a, t_list **stack_b, t_state *state)
 {
 	// t_list	*current;
 
@@ -495,34 +533,20 @@ void	stack_b_ops(t_list **stack_a, t_list **stack_b, t_state *state)
 void	solver(t_list **stack_a, t_list **stack_b)
 {
 	t_state	*state;
-	int		total_len;
 	
 	state = malloc(sizeof(t_state));
-	total_len = ft_lstsize(*stack_a);
-	// printf("Nothing:\n");
-	// printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
+	state->max_idx = ft_lstsize(*stack_a);
 	
-	// max_run(stack_a, state);
-	// printf("Orig:\n");
-	// printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
+	
 	state->lowest_moves = 4;
-	// max_run2(stack_a, state);
-	// printf("New:\n");
-	// printf("Start idx:%d\nEnd idx:%d\nLen: %d\n\n", state->run_start, state->run_end, state->len);
+
 	while ((max_run(stack_a, state) < ft_lstsize(*stack_a)) || ft_lstsize(*stack_b))
 	{
 		if (ft_lstsize(*stack_b))
-			stack_b_ops(stack_a, stack_b, state);
+			stack_b_export(stack_a, stack_b, state);
 		if (ft_lstsize(*stack_a) == max_run(stack_a, state) && ft_lstsize(*stack_b))// || state->run_start == 0)
 		{
-			if (get_nth_idx(*stack_b, ft_lstsize(*stack_b) - 1) > (total_len / 2))
-			{
-				printf("last b val:%d\n", get_nth_idx(*stack_b, ft_lstsize(*stack_b) - 1));
-				double_reverse_rotate(stack_a, stack_b);
-			}
-			else
-				reverse_rotate_a(stack_a, 0);
-			// state->lowest_moves = 5;
+			reverse_rotate_a(stack_a, 0);
 		}
 		else if (state->run_start == 0)
 			reverse_rotate_a(stack_a, 0);
@@ -543,6 +567,7 @@ void	solver(t_list **stack_a, t_list **stack_b)
 		// printf("----------\"memory leak galore\":---------\n");
 		// print_ll(*stack_a, *stack_b);
 	}
+	// end correction
 	insert_pos(-1, stack_a, stack_b, state);
 	while (get_nth_idx(*stack_a, 0) != 0)
 	{
@@ -571,8 +596,8 @@ int	main(int argc, char **argv)
 	indexer(*stack_a);
 	solver(stack_a, stack_b);
 	
-	printf("----------\"solved\":---------\n");
-	print_ll(*stack_a, *stack_b);
+	// printf("----------\"solved\":---------\n");
+	// print_ll(*stack_a, *stack_b);
 
 	delete_list(*stack_a);
 	delete_list(*stack_b);
