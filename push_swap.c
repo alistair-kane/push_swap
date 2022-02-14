@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/12 03:42:27 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/13 21:42:51 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,40 @@ int	get_nth(t_list *head, int index)
 	return (-1);
 }
 
+int	find_forward_shared(unsigned int a_rotate, unsigned int b_rotate)
+{
+	int i = 0;
+	
+	while (a_rotate && b_rotate)
+	{
+		a_rotate--;
+		b_rotate--;
+		i++;
+	}
+	while (a_rotate--)
+		i++;
+	while (b_rotate--)
+		i++;
+	return (i);
+}
+
+int	find_reverse_shared(unsigned int a_reverse, unsigned int b_reverse)
+{
+	int i = 0;
+	
+	while (a_reverse && b_reverse)
+	{
+		a_reverse--;
+		b_reverse--;
+		i++;
+	}
+	while (a_reverse--)
+		i++;
+	while (b_reverse--)
+		i++;
+	return (i);
+}
+
 int	get_nth_idx(t_list *head, int index)
 {
 	t_list	*current;
@@ -343,43 +377,163 @@ void	insert_pos(int val, t_list **stack_a, t_list **stack_b, t_state *state)
 
 int	find_bin(int val, t_list **stack_b)
 {
-	int i
+	int i;
 	int j;
-	int bin_size;
-	unsigned int lower;
-	int upper;
-	
+
 	i = 0;
 	j = 0;
-	lower = 0;
-	upper = bin_size;
+	if (!ft_lstsize(*stack_b))
+		return (0);
 	while(i < ft_lstsize(*stack_b))
 	{
-		j = get_nth_idx()
-		if (val >= lower && val <= upper)
-		
-		lower += bin_size;
-		upper += bin_size;
+		j = get_nth_idx(*stack_b, i) / 10;
+		if (j == val / 10)
+			return (i);
+		i++;
 	}
+	return (0);
 }
 
 void	stack_b_import(t_list **stack_a, t_list **stack_b, t_state *state)
 {
-	int	b_size;
 	int i;
+	int limit;
+
+	int a_rotate;
+	int a_reverse;
+	int	b_rotate;
+	int	b_reverse;
+
+	int move_thresh;
+	int lowest_val;
+	int val;
+
+	int unshared;
+	int forward;
+	int reverse;
 	
-	b_size = ft_lstsize(*stack_b);
-	i - 0;
-	while (i < ft_lstsize(*stack_a))
+	//looped
+	if (state->run_end < state->run_start)
 	{
-		if (!b_size)
-			b_moves = 0;
+		i = state->run_end;
+		limit = state->run_start;
+	}
+	else
+	{
+		i = 0;
+		limit = ft_lstsize(*stack_a);
+	}
+	
+	move_thresh = 1024;
+	lowest_val = -1;
+	while (i < limit)
+	{
+		val = get_nth_idx(*stack_a, i);
+		a_rotate = i;
+		b_rotate = find_bin(val, stack_b);
+		a_reverse = ft_lstsize(*stack_a) - a_rotate;
+		b_reverse = ft_lstsize(*stack_b) - b_rotate;
+		
+		unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
+		forward = find_forward_shared(a_rotate, b_rotate);
+		reverse = find_reverse_shared(a_reverse, b_reverse);
+		if (!(i >= state->run_start && i <= state->run_end))
+		{
+			if (unshared <= min(forward, reverse))
+			{
+				if (unshared < move_thresh)
+				{
+					move_thresh = unshared;
+					lowest_val = val;
+				}
+			}
+			else if (forward < reverse)
+			{
+				if (forward < move_thresh)
+				{
+					move_thresh = forward;
+					lowest_val = val;
+				}
+			}
+			else
+			{
+				if (reverse < move_thresh)
+				{
+					move_thresh = reverse;
+					lowest_val = val;
+				}
+			}
+		}
+		i++;
+	}
+	// printf("Lowest Val: %d | Moves: %d\n", lowest_val ,move_thresh);
+	i = 0;
+	while (lowest_val != get_nth_idx(*stack_a, i))
+		i++;
+	a_rotate = i;
+	b_rotate = find_bin(lowest_val, stack_b);
+	
+	a_reverse = ft_lstsize(*stack_a) - a_rotate;
+	b_reverse = ft_lstsize(*stack_b) - b_rotate;
+	
+	unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
+	forward = find_forward_shared(a_rotate, b_rotate);
+	reverse = find_reverse_shared(a_reverse, b_reverse);
+	if (unshared < forward && unshared < reverse)
+	{
+		if (a_reverse < a_rotate)
+		{	
+			while (a_reverse--)
+				reverse_rotate_a(stack_a, 0);
+		}
 		else
 		{
-			b_moves = find_bin(get_nth_idx(*stack_a, i))
+			while(a_rotate--)
+				rotate_a(stack_a, 0);
 		}
+		if (b_reverse < b_rotate)
+		{
+			while (b_reverse--)
+				reverse_rotate_b(stack_b, 0);
+		}
+		else
+		{
+			while (b_rotate--)
+				rotate_b(stack_b, 0);
+		}
+		push_b(stack_a, stack_b);
+	}
+	else if (forward < reverse)
+	{
+		while (a_rotate && b_rotate)
+		{
+			a_rotate--;
+			b_rotate--;
+			double_rotate(stack_a, stack_b);
+		}
+		while (a_rotate--)
+			rotate_a(stack_a, 0);
+		while (b_rotate--)
+			rotate_b(stack_b, 0);
+		push_b(stack_a, stack_b);
+	}
+	else
+	{
+		while (a_reverse && b_reverse)
+		{
+			a_reverse--;
+			b_reverse--;
+			double_reverse_rotate(stack_a, stack_b);
+		}
+		while (a_reverse--)
+			reverse_rotate_a(stack_a, 0);
+		while (b_reverse--)
+			reverse_rotate_b(stack_b, 0);
+		push_b(stack_a, stack_b);
+	}	
 }
-void	stack_b_export(t_list **stack_a, t_list **stack_b, t_state *state)
+
+void	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
 {
 	// t_list	*current;
 
@@ -387,146 +541,125 @@ void	stack_b_export(t_list **stack_a, t_list **stack_b, t_state *state)
 	int	b_rotate;
 	int	a_reverse;
 	int	b_reverse;
-	// current = copy(*stack_b);
+
+	int move_thresh;
+	int lowest_val;
 	int val;
+
+	int unshared;
+	int forward;
+	int reverse;
+
 	int i = 0;
-	// while (current != NULL)
+	move_thresh = 4;
+	lowest_val = -1;
 	while (get_nth_idx(*stack_b, i) != -1)
 	{
 		val = get_nth_idx(*stack_b, i);
-		// insert_pos(current->index, stack_a, stack_b, state);
 		insert_pos(val, stack_a, stack_b, state);
 		a_rotate = state->a_moves;
 		b_rotate = state->b_moves;
 		a_reverse = ft_lstsize(*stack_a) - a_rotate;
 		b_reverse = ft_lstsize(*stack_b) - b_rotate;
-		if ((min(b_rotate, b_reverse) + min(a_rotate, a_reverse)) < state->lowest_moves + 1)
+		
+		unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
+		forward = find_forward_shared(a_rotate, b_rotate);
+		reverse = find_reverse_shared(a_reverse, b_reverse);
+
+		if (unshared <= min(forward, reverse))
 		{
-			if (a_rotate < a_reverse && b_rotate < b_reverse)
+			if (unshared < move_thresh)
 			{
-				while (a_rotate && b_rotate)
-				{
-					a_rotate--;
-					b_rotate--;
-					double_rotate(stack_a, stack_b);
-				}
-				while (a_rotate--)
-					rotate_a(stack_a, 0);
-				while (b_rotate--)
-					rotate_b(stack_b, 0);
+				move_thresh = unshared;
+				lowest_val = val;
 			}
-			else if (a_reverse < a_rotate && b_reverse < b_rotate)
+		}
+		else if (forward < reverse)
+		{
+			if (forward < move_thresh)
 			{
-				while (a_reverse && b_reverse)
-				{
-					a_reverse--;
-					b_reverse--;
-					double_reverse_rotate(stack_a, stack_b);
-				}
+				move_thresh = forward;
+				lowest_val = val;
+			}
+		}
+		else
+		{
+			if (reverse < move_thresh)
+			{
+				move_thresh = reverse;
+				lowest_val = val;
+			}
+		}
+		i++;
+	}
+	// printf("Lowest Val: %d | Moves: %d\n", lowest_val ,move_thresh);
+	// i = 0;
+	// while (lowest_val != get_nth_idx(*stack_b, i))
+	// 	i++;
+	// if (move_thresh < 3)
+	if (lowest_val != -1)
+	{
+		insert_pos(lowest_val, stack_a, stack_b, state);
+		a_rotate = state->a_moves;
+		b_rotate = state->b_moves;
+		a_reverse = ft_lstsize(*stack_a) - a_rotate;
+		b_reverse = ft_lstsize(*stack_b) - b_rotate;
+		
+		unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
+		forward = find_forward_shared(a_rotate, b_rotate);
+		reverse = find_reverse_shared(a_reverse, b_reverse);
+		if (unshared < forward && unshared < reverse)
+		{
+			if (a_reverse < a_rotate)
+			{	
 				while (a_reverse--)
 					reverse_rotate_a(stack_a, 0);
+			}
+			else
+			{
+				while(a_rotate--)
+					rotate_a(stack_a, 0);
+			}
+			if (b_reverse < b_rotate)
+			{
 				while (b_reverse--)
 					reverse_rotate_b(stack_b, 0);
 			}
 			else
 			{
-				if (a_rotate < a_reverse)
-				{
-					while (a_rotate--)
-						rotate_a(stack_a, 0);
-				}
-				else
-				{
-					while (a_reverse--)
-						reverse_rotate_a(stack_a, 0);
-				}
-				if (b_rotate < b_reverse)
-				{
-					while (b_rotate--)
-						rotate_b(stack_b, 0);
-				}
-				else
-				{
-					while (b_reverse--)
-						reverse_rotate_b(stack_b, 0);
-				}
+				while (b_rotate--)
+					rotate_b(stack_b, 0);
 			}
-			// if (a_rotate < a_reverse)
-			// {
-			// 	while (a_rotate--)
-			// 		rotate_a(stack_a, 0);
-			// }
-			// else
-			// {
-			// 	while (a_reverse--)
-			// 		reverse_rotate_a(stack_a, 0);
-			// }
-			// if (b_rotate < b_reverse)
-			// {
-			// 	while (b_rotate--)
-			// 		rotate_b(stack_b, 0);
-			// }
-			// else
-			// {
-			// 	while (b_reverse--)
-			// 		reverse_rotate_b(stack_b, 0);
-			// }
 			push_a(stack_a, stack_b);
-			return ;
 		}
-		else if (min(a_rotate, a_reverse) < state->lowest_moves)
+		else if (forward < reverse)
 		{
-			if (min(a_rotate, a_reverse) > ft_lstsize(*stack_b) 
-			|| min(a_rotate, a_reverse) >= max_of(b_rotate, b_reverse))
+			while (a_rotate && b_rotate)
 			{
-				if (a_rotate < a_reverse)
-				{
-					while (get_nth_idx(*stack_b, 0) != val)
-						double_rotate(stack_a, stack_b);
-					while (a_rotate--)
-						rotate_a(stack_a, 0);
-				}
-				else
-				{
-					while (get_nth_idx(*stack_b, 0) != val)
-					{
-						double_reverse_rotate(stack_a, stack_b);
-						a_reverse--;
-					}
-					while (a_reverse--)
-						reverse_rotate_a(stack_a, 0);
-				}
-				push_a(stack_a, stack_b);
-				return ;
+				a_rotate--;
+				b_rotate--;
+				double_rotate(stack_a, stack_b);
 			}
+			while (a_rotate--)
+				rotate_a(stack_a, 0);
+			while (b_rotate--)
+				rotate_b(stack_b, 0);
+			push_a(stack_a, stack_b);
 		}
-		else if (min(b_rotate, b_reverse) < state->lowest_moves)
+		else
 		{
-			if (min(b_rotate, b_reverse) > ft_lstsize(*stack_a) 
-			|| min(b_rotate, b_reverse) >= max_of(a_rotate, a_reverse))
+			while (a_reverse && b_reverse)
 			{
-				if (b_rotate < b_reverse)
-				{
-					while (get_nth_idx(*stack_b, 0) != val)
-						double_rotate(stack_a, stack_b);
-					while (b_rotate--)
-						rotate_b(stack_b, 0);
-				}
-				else
-				{
-					while (get_nth_idx(*stack_b, 0) != val)
-					{
-						double_reverse_rotate(stack_a, stack_b);
-						b_reverse--;
-					}
-					while (b_reverse--)
-						reverse_rotate_b(stack_b, 0);
-				}
-				push_a(stack_a, stack_b);
-				return ;
+				a_reverse--;
+				b_reverse--;
+				double_reverse_rotate(stack_a, stack_b);
 			}
+			while (a_reverse--)
+				reverse_rotate_a(stack_a, 0);
+			while (b_reverse--)
+				reverse_rotate_b(stack_b, 0);
+			push_a(stack_a, stack_b);
 		}
-		i++;
 	}
 }
 
@@ -537,14 +670,18 @@ void	solver(t_list **stack_a, t_list **stack_b)
 	state = malloc(sizeof(t_state));
 	state->max_idx = ft_lstsize(*stack_a);
 	
-	
-	state->lowest_moves = 4;
+	max_run(stack_a, state);
+	// state->lowest_moves = 5;
 
-	while ((max_run(stack_a, state) < ft_lstsize(*stack_a)) || ft_lstsize(*stack_b))
+	// while ((max_run(stack_a, state) < ft_lstsize(*stack_a)) || ft_lstsize(*stack_b))
+	while ((max_run(stack_a, state) + ft_lstsize(*stack_b) < state->max_idx))
 	{
 		if (ft_lstsize(*stack_b))
-			stack_b_export(stack_a, stack_b, state);
-		if (ft_lstsize(*stack_a) == max_run(stack_a, state) && ft_lstsize(*stack_b))// || state->run_start == 0)
+		{
+			// stack_b_export(stack_a, stack_b, state);
+			stack_b_export2(stack_a, stack_b, state);
+		}
+		if (ft_lstsize(*stack_a) == max_run(stack_a, state) && ft_lstsize(*stack_b))
 		{
 			reverse_rotate_a(stack_a, 0);
 		}
@@ -562,11 +699,15 @@ void	solver(t_list **stack_a, t_list **stack_b)
 			if (((*stack_a)->next->next->index - (*stack_a)->index) == 1)
 				swap_a(stack_a, 0);
 			else
-				push_b(stack_a, stack_b);
+			{
+				stack_b_import(stack_a, stack_b, state);
+				// push_b(stack_a, stack_b);
+			}
 		}
 		// printf("----------\"memory leak galore\":---------\n");
 		// print_ll(*stack_a, *stack_b);
 	}
+	
 	// end correction
 	insert_pos(-1, stack_a, stack_b, state);
 	while (get_nth_idx(*stack_a, 0) != 0)
@@ -578,9 +719,6 @@ void	solver(t_list **stack_a, t_list **stack_b)
 	}
 	free(state);
 }
-
-// if a value fits into the range given by the run lowest and greater element of stack_b, push into stack b
-// for value in stack b, check the moves to put in the right positon in the run
 
 int	main(int argc, char **argv)
 {
@@ -596,8 +734,8 @@ int	main(int argc, char **argv)
 	indexer(*stack_a);
 	solver(stack_a, stack_b);
 	
-	// printf("----------\"solved\":---------\n");
-	// print_ll(*stack_a, *stack_b);
+	printf("----------\"solved\":---------\n");
+	print_ll(*stack_a, *stack_b);
 
 	delete_list(*stack_a);
 	delete_list(*stack_b);
@@ -607,31 +745,6 @@ int	main(int argc, char **argv)
 }
 
 // | awk '{for(i=1;i<=NF;i++)a[$i]++}END{for(o in a) printf "%s %s ",o,a[o]}'
-
-// // printf("A: %d, B: %d\n", a, b);
-// if (a_ > (ft_lstsize(*stack_a) / 2))
-// {
-// 	while (a != i)
-	
-// }
-// if (b > (ft_lstsize(*stack_b) / 2))
-// 	b = ft_lstsize(*stack_b) - b;
-
-// if (a < 4 && b < 6)
-// {
-// 	while (a && b)
-// 	{
-// 		if (!(state->reverse) && (current->index != (*stack_b)->index))
-// 			double_rotate(stack_a, stack_b);
-// 		else
-// 			reverse_rotate_a(stack_a, 0);
-// 		a--;
-// 		b--;
-// 	}	
-// 	while (a-- > 0)
-// 		rotate_a(stack_a, 0);
-// 	while (b-- > 0)
-// 		rotate_b(stack_b, 0);
 
 // int	find_fewest_moves(t_list **stack_a, t_list **stack_b, t_state *state)
 // {
@@ -746,157 +859,169 @@ int	main(int argc, char **argv)
 // 	return (lowest_val);
 // }
 
-// int	find_forward_shared(unsigned int a_rotate, unsigned int b_rotate)
+
+		// if ((min(b_rotate, b_reverse) + min(a_rotate, a_reverse)) < state->lowest_moves + 1)
+		// {
+		// 	if (a_rotate < a_reverse && b_rotate < b_reverse)
+		// 	{
+		// 		while (a_rotate && b_rotate)
+		// 		{
+		// 			a_rotate--;
+		// 			b_rotate--;
+		// 			double_rotate(stack_a, stack_b);
+		// 		}
+		// 		while (a_rotate--)
+		// 			rotate_a(stack_a, 0);
+		// 		while (b_rotate--)
+		// 			rotate_b(stack_b, 0);
+		// 	}
+		// 	else if (a_reverse < a_rotate && b_reverse < b_rotate)
+		// 	{
+		// 		while (a_reverse && b_reverse)
+		// 		{
+		// 			a_reverse--;
+		// 			b_reverse--;
+		// 			double_reverse_rotate(stack_a, stack_b);
+		// 		}
+		// 		while (a_reverse--)
+		// 			reverse_rotate_a(stack_a, 0);
+		// 		while (b_reverse--)
+		// 			reverse_rotate_b(stack_b, 0);
+		// 	}
+		// 	else
+		// 	{
+		// 		if (a_rotate < a_reverse)
+		// 		{
+		// 			while (a_rotate--)
+		// 				rotate_a(stack_a, 0);
+		// 		}
+		// 		else
+		// 		{
+		// 			while (a_reverse--)
+		// 				reverse_rotate_a(stack_a, 0);
+		// 		}
+		// 		if (b_rotate < b_reverse)
+		// 		{
+		// 			while (b_rotate--)
+		// 				rotate_b(stack_b, 0);
+		// 		}
+		// 		else
+		// 		{
+		// 			while (b_reverse--)
+		// 				reverse_rotate_b(stack_b, 0);
+		// 		}
+		// 	}
+		// 	push_a(stack_a, stack_b);
+		// 	return ;
+		// }
+		// else if (min(a_rotate, a_reverse) < state->lowest_moves)
+		// {
+		// 	if (min(a_rotate, a_reverse) > ft_lstsize(*stack_b) 
+		// 	|| min(a_rotate, a_reverse) >= max_of(b_rotate, b_reverse))
+		// 	{
+		// 		if (a_rotate < a_reverse)
+		// 		{
+		// 			while (get_nth_idx(*stack_b, 0) != val)
+		// 				double_rotate(stack_a, stack_b);
+		// 			while (a_rotate--)
+		// 				rotate_a(stack_a, 0);
+		// 		}
+		// 		else
+		// 		{
+		// 			while (get_nth_idx(*stack_b, 0) != val)
+		// 			{
+		// 				double_reverse_rotate(stack_a, stack_b);
+		// 				a_reverse--;
+		// 			}
+		// 			while (a_reverse--)
+		// 				reverse_rotate_a(stack_a, 0);
+		// 		}
+		// 		push_a(stack_a, stack_b);
+		// 		return ;
+		// 	}
+		// }
+		// else if (min(b_rotate, b_reverse) < state->lowest_moves)
+		// {
+		// 	if (min(b_rotate, b_reverse) > ft_lstsize(*stack_a) 
+		// 	|| min(b_rotate, b_reverse) >= max_of(a_rotate, a_reverse))
+		// 	{
+		// 		if (b_rotate < b_reverse)
+		// 		{
+		// 			while (get_nth_idx(*stack_b, 0) != val)
+		// 				double_rotate(stack_a, stack_b);
+		// 			while (b_rotate--)
+		// 				rotate_b(stack_b, 0);
+		// 		}
+		// 		else
+		// 		{
+		// 			while (get_nth_idx(*stack_b, 0) != val)
+		// 			{
+		// 				double_reverse_rotate(stack_a, stack_b);
+		// 				b_reverse--;
+		// 			}
+		// 			while (b_reverse--)
+		// 				reverse_rotate_b(stack_b, 0);
+		// 		}
+		// 		push_a(stack_a, stack_b);
+		// 		return ;
+		// 	}
+		// }
+		
+// void	stack_b_export(t_list **stack_a, t_list **stack_b, t_state *state)
 // {
+// 	int	a_rotate;
+// 	int	b_rotate;
+// 	int	a_reverse;
+// 	int	b_reverse;
+	
+// 	int unshared;
+// 	int forward;
+// 	int reverse;
+
+// 	int val;
 // 	int i = 0;
 	
-// 	while (a_rotate && b_rotate)
+// 	int lowest_val = 0;
+// 	int move_thresh = 100;
+// 	while (get_nth_idx(*stack_b, i) != -1)
 // 	{
-// 		a_rotate--;
-// 		b_rotate--;
-// 		i++;
-// 	}
-// 	while (a_rotate--)
-// 		i++;
-// 	while (b_rotate--)
-// 		i++;
-// 	return (i);
-// }
-
-// int	find_reverse_shared(unsigned int a_reverse, unsigned int b_reverse)
-// {
-// 	int i = 0;
-	
-// 	while (a_reverse && b_reverse)
-// 	{
-// 		a_reverse--;
-// 		b_reverse--;
-// 		i++;
-// 	}
-// 	while (a_reverse--)
-// 		i++;
-// 	while (b_reverse--)
-// 		i++;
-// 	return (i);
-// }
-// int	max_run(t_list **head, t_state *state)
-// {
-// 	t_list	*temp;
-// 	int		temp_len;
-// 	int		i;
-	
-// 	temp = copy(*head);
-// 	ft_lstadd_back(&temp, copy(*head));
-// 	i = 0;
-// 	temp_len = 1;
-// 	state->len = 1;
-// 	while ((temp)->next != NULL)
-// 	{
-// 		if ((temp)->next->index > (temp)->index)
-// 			temp_len++;
+// 		val = get_nth_idx(*stack_b, i);
+// 		insert_pos(val, stack_a, stack_b, state);
+// 		a_rotate = state->a_moves;
+// 		b_rotate = state->b_moves;
+// 		a_reverse = ft_lstsize(*stack_a) - a_rotate;
+// 		b_reverse = ft_lstsize(*stack_b) - b_rotate;
+		
+// 		unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
+// 		forward = find_forward_shared(a_rotate, b_rotate);
+// 		reverse = find_reverse_shared(a_reverse, b_reverse);
+		
+// 		if (unshared <= min(forward, reverse))
+// 		{
+// 			if (unshared < move_thresh)
+// 			{
+// 				move_thresh = unshared;
+// 				lowest_val = val;
+// 			}
+// 		}
+// 		else if (forward < reverse)
+// 		{
+// 			if (forward < move_thresh)
+// 			{
+// 				move_thresh = forward;
+// 				lowest_val = val;
+// 			}
+// 		}
 // 		else
 // 		{
-// 			if (state->len <= temp_len)
+// 			if (reverse < move_thresh)
 // 			{
-// 				state->len = temp_len;
-// 				state->run_start = i - state->len + 1;
-// 				state->run_end = i;
+// 				move_thresh = reverse;
+// 				lowest_val = val;
 // 			}
-// 			temp_len = 1;
 // 		}
 // 		i++;
-// 		temp = (temp)->next;
 // 	}
-// 	// circular
-// 	if (state->run_end >= ft_lstsize(*head))
-// 		state->run_end = state->run_end - ft_lstsize(*head);
-// 	if (state->run_start >= ft_lstsize(*head))
-// 		state->run_start = state->run_start - ft_lstsize(*head);
-// 	// printf("Lower idx:%d | Upper idx:%d\n", state->run_start, state->run_end); 	// printf("\nLen: %d\n", state->len);
-// 	// printf("Run lower:%d | Run upper:%d", get_nth(*head, state->run_start), get_nth(*head, state->run_end));
-// 	// printf("\nLen: %d\n", state->len);
-// 	free(temp);
-// 	return (state->len);
-// }
-
-// int	max_run2(t_list **head, t_state *state)
-// {
-// 	t_list  *temp;
-// 	int n;
-// 	int start_len;
-// 	int i;
-// 	int j;
-// 	int k;
-// 	int l;
-// 	int len;
-// 	int max;
-
-// 	temp = *head;
-// 	n = ft_lstsize(temp);
+// 	// printf("Lowest Val: %d | Moves: %d\n", lowest_val ,move_thresh);
 	
-// 	if (n == 1)
-// 	{
-// 		state->run_start = 0;
-// 		state->run_end = 1;
-// 		state->len = 1;
-// 		return (state->len);
-// 	}
-// 	start_len = 1;
-// 	i = 1;
-// 	while (get_nth_idx(temp, i - 1) < get_nth_idx(temp, i) && i < n)
-// 	{
-// 		start_len++;
-// 		i++;
-// 	}
-// 	max = start_len;
-// 	j = 0;
-// 	k = i + 1;
-// 	l = 0;
-// 	len = 1;
-// 	// while (j < n)
-// 	while (l < (n * 2))
-// 	{
-// 		if (get_nth_idx(temp, j) < get_nth_idx(temp, k))
-// 			len++;
-// 		else
-// 		{
-// 			if (max <= len)
-// 			{
-// 				max = len;
-// 				state->run_start = k - len;
-// 				state->run_end = k - 1;
-// 				// if (get_nth_idx(temp, j + 1) == -1)
-// 				// 	break;
-// 			}
-// 			len = 1;
-// 		}
-// 		// resets yo
-// 		if (k == n)
-// 			k = 0;
-// 		if (j == n)
-// 			j = 0;
-// 		j++;
-// 		k++;
-// 		l++;
-// 	}
-// 	// printf("len b4: %d\n", len);
-// 	// printf("max b4: %d\n", max);
-// 	if (get_nth_idx(temp, n - 1) < get_nth_idx(temp, 0))
-// 	{
-// 		// printf("loop detected\n");
-// 		if (max < (len + start_len))
-// 		{
-// 			state->run_start = n - len;
-// 			state->len = len + start_len;
-// 			state->run_end = start_len - 1;
-// 		}
-// 	}
-// 	else
-// 		state->len = max_of(max, len);
-// 	// // circular
-// 	// if (state->run_end >= n)
-// 	// 	state->run_end = state->run_end - n;
-// 	// if (state->run_start >= n)
-// 	// 	state->run_start = state->run_start - n;
-// 	return (state->len);
 // }
