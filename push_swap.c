@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/13 21:42:51 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/18 00:57:51 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,7 +204,7 @@ int	get_nth(t_list *head, int index)
 	return (-1);
 }
 
-int	find_forward_shared(unsigned int a_rotate, unsigned int b_rotate)
+int	find_forward_shared(int a_rotate, int b_rotate)
 {
 	int i = 0;
 	
@@ -214,14 +214,20 @@ int	find_forward_shared(unsigned int a_rotate, unsigned int b_rotate)
 		b_rotate--;
 		i++;
 	}
-	while (a_rotate--)
-		i++;
-	while (b_rotate--)
-		i++;
+	if (a_rotate > 0)
+	{
+		while (a_rotate--)
+			i++;
+	}
+	if (b_rotate > 0)
+	{
+		while (b_rotate--)
+			i++;
+	}
 	return (i);
 }
 
-int	find_reverse_shared(unsigned int a_reverse, unsigned int b_reverse)
+int	find_reverse_shared(int a_reverse, int b_reverse)
 {
 	int i = 0;
 	
@@ -231,10 +237,16 @@ int	find_reverse_shared(unsigned int a_reverse, unsigned int b_reverse)
 		b_reverse--;
 		i++;
 	}
-	while (a_reverse--)
-		i++;
-	while (b_reverse--)
-		i++;
+	if (a_reverse > 0)
+	{
+		while (a_reverse--)
+			i++;
+	}
+	if (b_reverse > 0)
+	{
+		while (b_reverse--)
+			i++;
+	}
 	return (i);
 }
 
@@ -377,21 +389,43 @@ void	insert_pos(int val, t_list **stack_a, t_list **stack_b, t_state *state)
 
 int	find_bin(int val, t_list **stack_b)
 {
+	int	len;
 	int i;
 	int j;
+	int temp;
+	int min_val;
+	int min_idx;
+	int bin_size;
 
-	i = 0;
-	j = 0;
-	if (!ft_lstsize(*stack_b))
+	bin_size = 10;
+	len = ft_lstsize(*stack_b); 
+	if (len == 0 || len == 1)
 		return (0);
-	while(i < ft_lstsize(*stack_b))
+	i = 0;
+	min_val = 1024;
+	while (i < len)
 	{
-		j = get_nth_idx(*stack_b, i) / 10;
-		if (j == val / 10)
-			return (i);
+		temp = get_nth_idx(*stack_b, i) / bin_size;
+		if (temp < min_val)
+		{
+			min_val = temp;
+			min_idx = i;
+		}
 		i++;
 	}
-	return (0);
+	i = min_idx;
+	j = 0;
+	while (j < len)
+	{
+		temp = get_nth_idx(*stack_b, i) / bin_size;
+		if (val / bin_size <= temp)
+			return(i);
+		j++;
+		i++;
+		if (i == len)
+			i = 0;
+	}
+	return (max_of(0, min_idx - 1));
 }
 
 void	stack_b_import(t_list **stack_a, t_list **stack_b, t_state *state)
@@ -424,7 +458,7 @@ void	stack_b_import(t_list **stack_a, t_list **stack_b, t_state *state)
 		limit = ft_lstsize(*stack_a);
 	}
 	
-	move_thresh = 1024;
+	move_thresh = 5;
 	lowest_val = -1;
 	while (i < limit)
 	{
@@ -551,7 +585,7 @@ void	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
 	int reverse;
 
 	int i = 0;
-	move_thresh = 4;
+	move_thresh = 8;
 	lowest_val = -1;
 	while (get_nth_idx(*stack_b, i) != -1)
 	{
@@ -709,14 +743,14 @@ void	solver(t_list **stack_a, t_list **stack_b)
 	}
 	
 	// end correction
-	insert_pos(-1, stack_a, stack_b, state);
-	while (get_nth_idx(*stack_a, 0) != 0)
-	{
-		if ((ft_lstsize(*stack_a) - state->a_moves) > state->a_moves)
-			rotate_a(stack_a, 0);
-		else
-			reverse_rotate_a(stack_a, 0);
-	}
+	// insert_pos(-1, stack_a, stack_b, state);
+	// while (get_nth_idx(*stack_a, 0) != 0)
+	// {
+	// 	if ((ft_lstsize(*stack_a) - state->a_moves) > state->a_moves)
+	// 		rotate_a(stack_a, 0);
+	// 	else
+	// 		reverse_rotate_a(stack_a, 0);
+	// }
 	free(state);
 }
 
@@ -776,12 +810,12 @@ int	main(int argc, char **argv)
 		
 // 		unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
 // 		shared_forward = find_forward_shared(a_rotate, b_rotate);
-// 		shared_reverse = find_reverse_shared(a_reverse, b_reverse);
+// 		shared_reverse = findd_reverse_shared(a_reverse, b_reverse);
 		
 // 		// printf("Val: %d\n", val);
 // 		// printf("unshared: %d\n",min(a_rotate, a_reverse) + min(b_rotate, b_reverse));
 // 		// printf("forward shared %d\n", find_forward_shared(a_rotate, b_rotate));
-// 		// printf("reverse shared %d\n\n", find_reverse_shared(a_reverse, b_reverse));
+// 		// printf("reverse shared %d\n\n", findd_reverse_shared(a_reverse, b_reverse));
 		
 // 		if (unshared < min(shared_forward, shared_reverse))
 // 			lowest_moves = unshared;
@@ -994,7 +1028,7 @@ int	main(int argc, char **argv)
 		
 // 		unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
 // 		forward = find_forward_shared(a_rotate, b_rotate);
-// 		reverse = find_reverse_shared(a_reverse, b_reverse);
+// 		reverse = findd_reverse_shared(a_reverse, b_reverse);
 		
 // 		if (unshared <= min(forward, reverse))
 // 		{
