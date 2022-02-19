@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/19 23:40:59 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/20 00:03:31 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -658,6 +658,7 @@ int	main(int argc, char **argv)
 		return (return_error());
 	stack_b = malloc(sizeof(t_list));
 	indexer(*stack_a);
+	// check for <5
 	solver(stack_a, stack_b);
 	// printf("----------\"solved\":---------\n");
 	// print_ll(*stack_a, *stack_b);
