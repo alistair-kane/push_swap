@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/18 00:57:51 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/19 06:08:15 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ t_list	*print_gne(t_list *node, int *holder)
 	t_list	*empty;
 
 	empty = malloc(sizeof(t_list));
-	// empty->content = 0;
 	empty->index = 0;
 	empty->next = NULL;
 	if (node == NULL)
@@ -86,7 +85,6 @@ t_list	*print_gne(t_list *node, int *holder)
 		return (empty);
 	}
 	else
-		// *holder = node->content;
 		*holder = node->index;
 	free(empty);
 	return (node);
@@ -304,87 +302,114 @@ void	indexer(t_list *stack_a)
 	free(sorted);
 }
 
-int	max_run(t_list **head, t_state *state)
+int	reset_temp(int temp_len, int i, t_state *state)
+{
+	if (state->len < temp_len)
+	{
+		state->len = temp_len;
+		state->run_start = i - (state->len - 1);
+		state->run_end = i;
+	}
+	temp_len = 1;
+	return (temp_len);
+}
+
+void	count_consec(t_list **head, t_state *state, int len)
 {
 	int	i;
 	int	j;
 	int	k;
-	int	n;
 	int	temp_len;
-
+	
 	i = -1;
 	j = 0;
 	k = 1;
-	n = ft_lstsize(*head);
 	temp_len = 1;
 	state->len = 1;
-	while (++i < (n * 2))
+	while (++i < (len * 2))
 	{
 		if (get_nth_idx(*head, j++) < get_nth_idx(*head, k++))
 			temp_len++;
 		else
-		{
-			if (state->len < temp_len)
-			{
-				state->len = temp_len;
-				state->run_start = i - (state->len - 1);
-				state->run_end = i;
-			}
-			temp_len = 1;
-		}
-		if (k == n)
+			temp_len = reset_temp(temp_len, i, state);
+		if (k == len)
 			k = 0;
-		if (j == n)
+		if (j == len)
 			j = 0;
 	}
-	if (state->run_end >= n)
-		state->run_end = state->run_end - n;
-	if (state->run_start >= n)
-		state->run_start = state->run_start - n;
+}
+
+int	max_run(t_list **head, t_state *state)
+{
+	int	len;
+
+	len = ft_lstsize(*head);
+	count_consec(head, state, len);
+	if (state->run_end >= len)
+		state->run_end = state->run_end - len;
+	if (state->run_start >= len)
+		state->run_start = state->run_start - len;
 	return (state->len);
+}
+
+int	slot_in_run(int val, t_list **stack_a, t_state *state)
+{
+	int	fits;
+	int	i;
+
+	fits = 0;
+	i = state->run_start;
+	while (fits != 2)
+	{
+		fits = 0;
+		if (val > get_nth_idx(*stack_a, i)) 
+			fits++;
+		if (i == ft_lstsize(*stack_a))
+			i = -1;
+		if (val < get_nth_idx(*stack_a, i + 1))
+			fits++;
+		i++;
+	}
+	return (i);
 }
 
 void	insert_pos(int val, t_list **stack_a, t_list **stack_b, t_state *state)
 {
-	int	a_len;
-	int m;
+	int moves;
 	int i;
-	int fits;
-	
-	a_len = ft_lstsize(*stack_a);
+
 	max_run(stack_a, state);
 	if (val < get_nth_idx(*stack_a, state->run_start))
-		m = state->run_start;
-	
+		moves = state->run_start;
 	else if (val > get_nth_idx(*stack_a, state->run_end))
-		m = state->run_end;
+		moves = state->run_end;
 	else
-	{
-		fits = 0;
-		i = state->run_start;
-		while (fits != 2)
-		{
-			fits = 0;
-			// printf("Comp Lower: %d", get_nth_idx(*stack_a, i));
-			if (val > get_nth_idx(*stack_a, i)) 
-				fits++;
-			if (i == a_len)
-				i = -1;
-			// printf(" Comp Upper: %d\n", get_nth_idx(*stack_a, i + 1));
-			if (val < get_nth_idx(*stack_a, i + 1))
-				fits++;
-			i++;
-		}
-		m = i;
-	}
-	state->a_moves = m;
-
+		moves = slot_in_run(val, stack_a, state);
+	state->a_moves = moves;
 	i = 0;
 	while (get_nth_idx(*stack_b, i) != val)
 		i++;
-	// if (i > (ft_lstsize(*stack_b) / 2))
-	// 	i = ft_lstsize(*stack_b) - i;
 	state->b_moves = i;
+}
+
+int	max_idx(int len, t_list **head)
+{
+	int i;
+	int max_val;
+	int max_idx;
+
+	i = 0;
+	max_val = 0;
+	while (i < len)
+	{
+		if (get_nth_idx(*head, i) > max_val)
+		{
+			max_val = get_nth_idx(*head, i);
+			max_idx = i;
+		}
+		i++;
+	}
+	return(max_idx);
 }
 
 int	find_bin(int val, t_list **stack_b)
@@ -392,40 +417,22 @@ int	find_bin(int val, t_list **stack_b)
 	int	len;
 	int i;
 	int j;
-	int temp;
-	int min_val;
-	int min_idx;
-	int bin_size;
 
-	bin_size = 10;
 	len = ft_lstsize(*stack_b); 
 	if (len == 0 || len == 1)
 		return (0);
-	i = 0;
-	min_val = 1024;
-	while (i < len)
-	{
-		temp = get_nth_idx(*stack_b, i) / bin_size;
-		if (temp < min_val)
-		{
-			min_val = temp;
-			min_idx = i;
-		}
-		i++;
-	}
-	i = min_idx;
+	i = max_idx(len, stack_b);
 	j = 0;
 	while (j < len)
 	{
-		temp = get_nth_idx(*stack_b, i) / bin_size;
-		if (val / bin_size <= temp)
+		if (val > get_nth_idx(*stack_b, i))
 			return(i);
 		j++;
 		i++;
 		if (i == len)
 			i = 0;
 	}
-	return (max_of(0, min_idx - 1));
+	return (max_idx(len, stack_b));
 }
 
 void	stack_b_import(t_list **stack_a, t_list **stack_b, t_state *state)
@@ -458,49 +465,45 @@ void	stack_b_import(t_list **stack_a, t_list **stack_b, t_state *state)
 		limit = ft_lstsize(*stack_a);
 	}
 	
-	move_thresh = 5;
+	move_thresh = 1000;
 	lowest_val = -1;
 	while (i < limit)
 	{
 		val = get_nth_idx(*stack_a, i);
-		a_rotate = i;
-		b_rotate = find_bin(val, stack_b);
-		a_reverse = ft_lstsize(*stack_a) - a_rotate;
-		b_reverse = ft_lstsize(*stack_b) - b_rotate;
+		// a_rotate = i;
+		// b_rotate = find_bin(val, stack_b);
+		// a_reverse = ft_lstsize(*stack_a) - a_rotate;
+		// b_reverse = ft_lstsize(*stack_b) - b_rotate;
 		
-		unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
-		forward = find_forward_shared(a_rotate, b_rotate);
-		reverse = find_reverse_shared(a_reverse, b_reverse);
+		// unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
+		// forward = find_forward_shared(a_rotate, b_rotate);
+		// reverse = find_reverse_shared(a_reverse, b_reverse);
+		unshared = min(i, ft_lstsize(*stack_a) - i) 
+			+ min(find_bin(val, stack_b), b_reverse);
+		forward = find_forward_shared(i, find_bin(val, stack_b));
+		reverse = find_reverse_shared(ft_lstsize(*stack_a) - i, 
+			ft_lstsize(*stack_b) - find_bin(val, stack_b));
 		if (!(i >= state->run_start && i <= state->run_end))
 		{
-			if (unshared <= min(forward, reverse))
+			if (unshared <= min(forward, reverse) && unshared < move_thresh)
 			{
-				if (unshared < move_thresh)
-				{
-					move_thresh = unshared;
-					lowest_val = val;
-				}
+				move_thresh = unshared;
+				lowest_val = val;
 			}
-			else if (forward < reverse)
+			else if (forward < reverse && forward < move_thresh)
 			{
-				if (forward < move_thresh)
-				{
-					move_thresh = forward;
-					lowest_val = val;
-				}
+				move_thresh = forward;
+				lowest_val = val;
 			}
-			else
+			else if (reverse < move_thresh)
 			{
-				if (reverse < move_thresh)
-				{
-					move_thresh = reverse;
-					lowest_val = val;
-				}
+				move_thresh = reverse;
+				lowest_val = val;
 			}
 		}
 		i++;
 	}
-	// printf("Lowest Val: %d | Moves: %d\n", lowest_val ,move_thresh);
+
 	i = 0;
 	while (lowest_val != get_nth_idx(*stack_a, i))
 		i++;
@@ -564,13 +567,15 @@ void	stack_b_import(t_list **stack_a, t_list **stack_b, t_state *state)
 		while (b_reverse--)
 			reverse_rotate_b(stack_b, 0);
 		push_b(stack_a, stack_b);
-	}	
+	}
+	// printf("----------\"memory leak galore - after push\":---------\n");
+	// print_ll(*stack_a, *stack_b);
 }
 
-void	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
+int	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
 {
-	// t_list	*current;
-
+	int success;
+	
 	int	a_rotate;
 	int	b_rotate;
 	int	a_reverse;
@@ -585,8 +590,9 @@ void	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
 	int reverse;
 
 	int i = 0;
-	move_thresh = 8;
+	move_thresh = 3;
 	lowest_val = -1;
+	success = 0;
 	while (get_nth_idx(*stack_b, i) != -1)
 	{
 		val = get_nth_idx(*stack_b, i);
@@ -626,11 +632,7 @@ void	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
 		}
 		i++;
 	}
-	// printf("Lowest Val: %d | Moves: %d\n", lowest_val ,move_thresh);
-	// i = 0;
-	// while (lowest_val != get_nth_idx(*stack_b, i))
-	// 	i++;
-	// if (move_thresh < 3)
+
 	if (lowest_val != -1)
 	{
 		insert_pos(lowest_val, stack_a, stack_b, state);
@@ -665,6 +667,7 @@ void	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
 					rotate_b(stack_b, 0);
 			}
 			push_a(stack_a, stack_b);
+			success = 1;
 		}
 		else if (forward < reverse)
 		{
@@ -679,6 +682,7 @@ void	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
 			while (b_rotate--)
 				rotate_b(stack_b, 0);
 			push_a(stack_a, stack_b);
+			success = 1;
 		}
 		else
 		{
@@ -693,8 +697,12 @@ void	stack_b_export2(t_list **stack_a, t_list **stack_b, t_state *state)
 			while (b_reverse--)
 				reverse_rotate_b(stack_b, 0);
 			push_a(stack_a, stack_b);
+			success = 1;
 		}
 	}
+	// printf("----------\"memory leak galore - back to A\":---------\n");
+	// print_ll(*stack_a, *stack_b);
+	return (success);
 }
 
 void	solver(t_list **stack_a, t_list **stack_b)
@@ -702,23 +710,15 @@ void	solver(t_list **stack_a, t_list **stack_b)
 	t_state	*state;
 	
 	state = malloc(sizeof(t_state));
-	state->max_idx = ft_lstsize(*stack_a);
-	
-	max_run(stack_a, state);
-	// state->lowest_moves = 5;
-
-	// while ((max_run(stack_a, state) < ft_lstsize(*stack_a)) || ft_lstsize(*stack_b))
-	while ((max_run(stack_a, state) + ft_lstsize(*stack_b) < state->max_idx))
+	while ((max_run(stack_a, state) < ft_lstsize(*stack_a)) || ft_lstsize(*stack_b))
 	{
 		if (ft_lstsize(*stack_b))
 		{
-			// stack_b_export(stack_a, stack_b, state);
-			stack_b_export2(stack_a, stack_b, state);
+			if (stack_b_export2(stack_a, stack_b, state))
+				continue;
 		}
 		if (ft_lstsize(*stack_a) == max_run(stack_a, state) && ft_lstsize(*stack_b))
-		{
 			reverse_rotate_a(stack_a, 0);
-		}
 		else if (state->run_start == 0)
 			reverse_rotate_a(stack_a, 0);
 		else if (state->run_end < state->len)
@@ -729,28 +729,19 @@ void	solver(t_list **stack_a, t_list **stack_b)
 				rotate_a(stack_a, 0);
 		}
 		else if (ft_lstsize(*stack_a) > 2)
-		{
-			if (((*stack_a)->next->next->index - (*stack_a)->index) == 1)
-				swap_a(stack_a, 0);
-			else
-			{
-				stack_b_import(stack_a, stack_b, state);
-				// push_b(stack_a, stack_b);
-			}
-		}
+			stack_b_import(stack_a, stack_b, state);
 		// printf("----------\"memory leak galore\":---------\n");
 		// print_ll(*stack_a, *stack_b);
 	}
-	
 	// end correction
-	// insert_pos(-1, stack_a, stack_b, state);
-	// while (get_nth_idx(*stack_a, 0) != 0)
-	// {
-	// 	if ((ft_lstsize(*stack_a) - state->a_moves) > state->a_moves)
-	// 		rotate_a(stack_a, 0);
-	// 	else
-	// 		reverse_rotate_a(stack_a, 0);
-	// }
+	insert_pos(-1, stack_a, stack_b, state);
+	while (get_nth_idx(*stack_a, 0) != 0)
+	{
+		if ((ft_lstsize(*stack_a) - state->a_moves) > state->a_moves)
+			rotate_a(stack_a, 0);
+		else
+			reverse_rotate_a(stack_a, 0);
+	}
 	free(state);
 }
 
@@ -1058,4 +1049,44 @@ int	main(int argc, char **argv)
 // 	}
 // 	// printf("Lowest Val: %d | Moves: %d\n", lowest_val ,move_thresh);
 	
+// }
+// int	find_bin(int val, t_list **stack_b)
+// {
+// 	int	len;
+// 	int i;
+// 	int j;
+// 	int temp;
+// 	int min_val;
+// 	int min_idx;
+// 	int bin_size;
+
+// 	bin_size = 1;
+// 	len = ft_lstsize(*stack_b); 
+// 	if (len == 0 || len == 1)
+// 		return (0);
+// 	i = 0;
+// 	min_val = 1024;
+// 	while (i < len)
+// 	{
+// 		temp = get_nth_idx(*stack_b, i) / bin_size;
+// 		if (temp < min_val)
+// 		{
+// 			min_val = temp;
+// 			min_idx = i;
+// 		}
+// 		i++;
+// 	}
+// 	i = min_idx;
+// 	j = 0;
+// 	while (j < len)
+// 	{
+// 		temp = get_nth_idx(*stack_b, i) / bin_size;
+// 		if (val / bin_size <= temp)
+// 			return(i);
+// 		j++;
+// 		i++;
+// 		if (i == len)
+// 			i = 0;
+// 	}
+// 	return (max_of(0, min_idx));
 // }
