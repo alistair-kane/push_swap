@@ -1,38 +1,37 @@
-NAME	= push_swap.a
-#Implicit rules:
+NAME	= push_swap
 CC		= gcc
-CFLAGS	= -Wall -Werror -Wextra
+CFLAGS	= -Wall -Werror -Wextra -g
+LIB_LOC = ./libft
+LIBRARY = libft.a
+SRCS	= push_swap.c src/indexer.c src/init.c src/lower_sort.c src/utils/utils_1.c \
+src/utils/utils_2.c src/utils/utils_3.c src/utils/utils_4.c src/utils/utils_5.c \
+src/operations/operations_1.c src/operations/operations_2.c src/operations/operations_3.c
+BONUS	= checker.c src/operations/operations_1.c src/operations/operations_2.c \
+src/operations/operations_3.c src/indexer.c src/utils/utils_1.c src/utils/utils_2.c \
+src/lower_sort.c src/init.c
 
-SRCS	= t_list_ops.c
-# BONUS	= ft_printf_bonus.c conversion_util_bonus.c conversions_csp_bonus.c conversions_diuxX_bonus.c
-#Implicit compliation rule used here:
 OBJS	= ${SRCS:.c=.o}
-# BONUS_O	= ${BONUS:.c=.o}
-
-MAKELIB	= make -C libft/
+BONUS_OBJS	= ${BONUS:.c=.o}
 
 all: $(NAME)
 
-#cp copies across the libft.a file to the current directory 
-$(NAME): ${OBJS}
-	$(MAKELIB)
-	cp libft/libft.a $(NAME)
-	ar rcs $(NAME) ${OBJS}
+$(LIBRARY):
+	$(MAKE) -C $(LIB_LOC)
 
-# bonus: ${BONUS_O}
-# 	$(MAKELIB)
-# 	cp libft/libft.a $(NAME)
-# 	ar rcs $(NAME) ${BONUS_O}
+$(NAME): $(OBJS) $(LIBRARY)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L $(LIB_LOC) -lft
+	rm -f $(OBJS)
+
+bonus: $(BONUS_OBJS) $(LIBRARY)
+	$(CC) $(CFLAGS) -o checker $(BONUS_OBJS) -L $(LIB_LOC) -lft
+	rm -f $(BONUS_OBJS)
 
 clean:
-	$(MAKELIB) clean
-	rm -f ${OBJS}
-# rm -f ${BONUS_O}
+	rm -f $(OBJS) $(BONUS_OBJS)
 
 fclean: clean
-	$(MAKELIB) fclean
-	rm -f $(NAME)
+	rm -f $(NAME) checker
 
 re:	fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all bonus clean fclean re

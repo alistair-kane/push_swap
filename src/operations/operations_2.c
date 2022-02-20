@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   list_instructions_2.c                              :+:      :+:    :+:   */
+/*   operations_2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/15 16:49:34 by alkane            #+#    #+#             */
-/*   Updated: 2022/02/06 01:53:49 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/20 07:04:44 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
+#include "../../push_swap.h"
 
-void	rotate_a(t_list **head_a, int double_flag)
+void	rotate_a(t_list **head_a, int supress)
 {
 	t_list	*last;
 	t_list	*second;
@@ -26,11 +26,11 @@ void	rotate_a(t_list **head_a, int double_flag)
 	(*head_a)->next = NULL;
 	last->next = *head_a;
 	*head_a = second;
-	if (!double_flag)
+	if (!supress)
 		write(1, "ra\n", 3);
 }
 
-void	rotate_b(t_list **head_b, int double_flag)
+void	rotate_b(t_list **head_b, int supress)
 {
 	t_list	*last;
 	t_list	*second;
@@ -44,13 +44,14 @@ void	rotate_b(t_list **head_b, int double_flag)
 	(*head_b)->next = NULL;
 	last->next = *head_b;
 	*head_b = second;
-	if (!double_flag)
+	if (!supress)
 		write(1, "rb\n", 3);
 }
 
-void	double_rotate(t_list **head_a, t_list **head_b)
+void	double_rotate(t_list **head_a, t_list **head_b, int supress)
 {
 	rotate_a(head_a, 1);
 	rotate_b(head_b, 1);
-	write(1, "rr\n", 3);
+	if (!supress)
+		write(1, "rr\n", 3);
 }
