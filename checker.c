@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checker.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 08:06:13 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/20 22:01:08 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,3 @@ int	main(int argc, char **argv)
 	free(stack_b);
 	return (0);
 }
-
-// src/operations/operations_1.c src/operations/operations_2.c 
-// src/operations/operations_3.c src/indexer.c src/utils/utils_1.c
-// src/utils/utils_2.c src/lower_sort.c src/init.c checker.c 
-// libft/libft.a -o checker

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 06:41:26 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/20 20:00:53 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,8 +90,6 @@ int	main(int argc, char **argv)
 		solve_lower(stack_a, stack_b);
 	else
 		solve_upper(stack_a, stack_b);
-	// printf("----------\"solved\":---------\n");
-	// print_ll(*stack_a, *stack_b);
 	delete_list(*stack_a);
 	delete_list(*stack_b);
 	free(stack_a);

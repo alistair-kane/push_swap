@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   operations_1.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:03:38 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 07:06:28 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/20 21:57:56 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../push_swap.h"
 
-// swap the first 2 elements at the top of stack a. Do nothing if there
-// is only one or no elements
 void	swap_a(t_list **head_a, int supress)
 {
 	t_list	*temp;

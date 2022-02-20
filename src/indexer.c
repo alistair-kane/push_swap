@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   indexer.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:25:45 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 06:41:00 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/20 20:46:04 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,28 +24,28 @@ static void	swap(t_list *a, t_list *b)
 static void	bubble_sort(t_list *start)
 {
 	int		swapped;
-	t_list	*ptr1;
-	t_list	*lptr;
+	t_list	*ptr_1;
+	t_list	*l_ptr;
 
-	ptr1 = NULL;
-	lptr = NULL;
+	ptr_1 = NULL;
+	l_ptr = NULL;
 	if (start == NULL)
 		return ;
 	swapped = 1;
 	while (swapped)
 	{
 		swapped = 0;
-		ptr1 = start;
-		while (ptr1->next != lptr)
+		ptr_1 = start;
+		while (ptr_1->next != l_ptr)
 		{
-			if (ptr1->content > ptr1->next->content)
+			if (ptr_1->content > ptr_1->next->content)
 			{
-				swap(ptr1, ptr1->next);
+				swap(ptr_1, ptr_1->next);
 				swapped = 1;
 			}
-			ptr1 = ptr1->next;
+			ptr_1 = ptr_1->next;
 		}
-		lptr = ptr1;
+		l_ptr = ptr_1;
 	}
 }
 
@@ -81,6 +81,7 @@ static	t_list	*copy(t_list *head)
 void	indexer(t_list *stack_a)
 {
 	t_list	*sorted;
+	t_list	*next;
 	int		i;
 
 	sorted = copy(stack_a);
@@ -96,5 +97,10 @@ void	indexer(t_list *stack_a)
 		}
 		stack_a = stack_a->next;
 	}
-	free(sorted);
+	while (sorted)
+	{
+		next = sorted->next;
+		free(sorted);
+		sorted = next;
+	}
 }
