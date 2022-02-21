@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:41:02 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 07:45:10 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/21 06:15:48 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,9 @@ int	push_to_a(t_list **stack_a, t_list **stack_b, t_state *state)
 	int	unshared;
 	int	i;
 
-	i = 0;
+	i = -1;
 	lowest_val = -1;
-	while (get_nth_idx(*stack_b, i) != -1)
+	while (get_nth_idx(*stack_b, ++i) != -1)
 	{
 		val = get_nth_idx(*stack_b, i);
 		insert_pos(val, stack_a, stack_b, state);
@@ -65,14 +65,13 @@ int	push_to_a(t_list **stack_a, t_list **stack_b, t_state *state)
 		if (unshared < 1 || forward_shared(state->a_moves, state->b_moves) < 1 \
 			|| reverse_shared(ft_lstsize(*stack_a) - state->a_moves, \
 			ft_lstsize(*stack_b) - state->b_moves) < 1)
+		{
 			lowest_val = val;
-		i++;
+			break ;
+		}
 	}
 	if (lowest_val != -1)
-	{
-		push_a(stack_a, stack_b, 0);
-		return (1);
-	}
+		return (push_a(stack_a, stack_b, 0));
 	return (0);
 }
 

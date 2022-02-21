@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/02/20 07:05:07 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/21 06:11:17 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ t_list	**list_builder(int argc, char **argv);
 void	swap_a(t_list **head_a, int supress);
 void	swap_b(t_list **head_b, int supress);
 void	double_swap(t_list **head_a, t_list **head_b, int supress);
-void	push_a(t_list **head_a, t_list **head_b, int supress);
-void	push_b(t_list **head_a, t_list **head_b, int supress);
+int		push_a(t_list **head_a, t_list **head_b, int supress);
+int		push_b(t_list **head_a, t_list **head_b, int supress);
 void	rotate_a(t_list **head_a, int supress);
 void	rotate_b(t_list **head_b, int supress);
 void	double_rotate(t_list **head_a, t_list **head_b, int supress);
@@ -54,6 +54,7 @@ int		reverse_shared(int a_reverse, int b_reverse);
 int		min(int x, int y);
 int		max_run(t_list **head, t_state *state);
 void	insert_pos(int val, t_list **stack_a, t_list **stack_b, t_state *state);
+void	delete_list(t_list *head_ref);
 
 void	a_moves(int a_rotate, int a_reverse, t_list **stack_a);
 void	b_moves(int b_rotate, int b_reverse, t_list **stack_b);

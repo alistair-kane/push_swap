@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   operations_1.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:03:38 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 21:57:56 by alkane           ###   ########.fr       */
+/*   Updated: 2022/02/21 06:11:57 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,30 +60,32 @@ void	double_swap(t_list **head_a, t_list **head_b, int supress)
 		write(1, "ss\n", 3);
 }
 
-void	push_a(t_list **head_a, t_list **head_b, int supress)
+int	push_a(t_list **head_a, t_list **head_b, int supress)
 {
 	t_list	*new_node;
 
 	if (*head_b == NULL)
-		return ;
+		return (0);
 	new_node = *head_b;
 	*head_b = (*head_b)->next;
 	new_node->next = *head_a;
 	*head_a = new_node;
 	if (!supress)
 		write(1, "pa\n", 3);
+	return (1);
 }
 
-void	push_b(t_list **head_a, t_list **head_b, int supress)
+int	push_b(t_list **head_a, t_list **head_b, int supress)
 {
 	t_list	*new_node;
 
 	if (*head_a == NULL)
-		return ;
+		return (0);
 	new_node = *head_a;
 	*head_a = (*head_a)->next;
 	new_node->next = *head_b;
 	*head_b = new_node;
 	if (!supress)
 		write(1, "pb\n", 3);
+	return (1);
 }

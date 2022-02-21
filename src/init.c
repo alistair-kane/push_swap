@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:43:28 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 07:59:12 by alistair         ###   ########.fr       */
+/*   Updated: 2022/02/21 05:19:18 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,13 @@ static int	count_dup(t_list *head_ref)
 	return (count);
 }
 
+static void	*return_free(t_list **stack_a)
+{
+	delete_list(*stack_a);
+	free(stack_a);
+	return (NULL);
+}
+
 t_list	**list_builder(int argc, char **argv)
 {
 	t_list	**stack_a;
@@ -47,7 +54,7 @@ t_list	**list_builder(int argc, char **argv)
 	{
 		val = ft_atoi(argv[i]);
 		if (val >= 2147483648 || val < -2147483648 || *argv[i] == '\0')
-			return (NULL);
+			return (return_free(stack_a));
 		else
 		{
 			if (i++ == 1)
@@ -56,7 +63,7 @@ t_list	**list_builder(int argc, char **argv)
 			{
 				ft_lstadd_back(stack_a, ft_lstnew(val));
 				if (count_dup(*stack_a))
-					return (NULL);
+					return (return_free(stack_a));
 			}
 		}
 	}
