@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 21:01:58 by alkane            #+#    #+#             */
-/*   Updated: 2022/03/21 22:05:04 by alistair         ###   ########.fr       */
+/*   Updated: 2022/03/22 22:30:53 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ static int	is_space(char ch)
 		return (0);
 }
 
-static int	check_negative(const char *nptr, int *idx)
+static int	check_negative(const char *nptr, unsigned int *idx)
 {
-	int negative_count;
+	int				negative_count;
 	unsigned int	i;
-	
+
 	negative_count = 1;
 	i = 0;
 	while ((is_space(nptr[i]) || nptr[i] == '-' || nptr[i] == '+'))
@@ -37,7 +37,7 @@ static int	check_negative(const char *nptr, int *idx)
 		i++;
 	}
 	*idx = i;
-	return(negative_count);
+	return (negative_count);
 }
 
 long	ft_atoi(const char *nptr)
@@ -47,18 +47,8 @@ long	ft_atoi(const char *nptr)
 	long			return_value;
 
 	i = -1;
-	// negative_count = 1;
 	negative_count = check_negative(nptr, &i);
 	return_value = 0;
-	// while ((is_space(nptr[++i]) || nptr[i] == '-' || nptr[i] == '+'))
-	// {
-	// 	if ((nptr[i] == '-') || (nptr[i] == '+'))
-	// 	{
-	// 		if (nptr[i++] == '-')
-	// 			negative_count = -1;
-	// 		break ;
-	// 	}
-	// }
 	if (!nptr[i])
 		return (2147483648);
 	while (nptr[i])

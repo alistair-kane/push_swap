@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/03/21 23:09:52 by alistair         ###   ########.fr       */
+/*   Updated: 2022/03/22 22:49:22 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,16 @@ static int	return_error(void)
 
 void	delete_list(t_list *head_ref)
 {
+	t_list *next;
+	
 	if (head_ref == NULL)
 		return ;
-	delete_list(head_ref -> next);
+	while (head_ref)
+	{
+		next = head_ref->next;
+		free(head_ref);
+		head_ref = next;
+	}
 	free(head_ref);
 }
 
@@ -65,11 +72,11 @@ void	solve_lower(t_list **stack_a, t_list **stack_b, t_state *state)
 	else if (len == 2 && get_nth_idx(*stack_a, 0) > get_nth_idx(*stack_a, 1))
 		swap_a(stack_a, 0);
 	else if (len == 3)
-		sort_three(*stack_a);
+		sort_three(stack_a);
 	else if (len == 4)
-		sort_four(*stack_a, *stack_b);
+		sort_four(stack_a, stack_b);
 	else if (len == 5)
-		sort_five(*stack_a, *stack_b);
+		sort_five(stack_a, stack_b);
 }
 
 int	main(int argc, char **argv)
@@ -83,7 +90,7 @@ int	main(int argc, char **argv)
 	stack_a = list_builder(argc, argv);
 	if (!stack_a)
 		return (return_error());
-	stack_b = malloc(sizeof(t_list));
+	stack_b = ft_calloc(1, sizeof(t_list));
 	indexer(*stack_a);
 	state = malloc(sizeof(t_state));
 	if (ft_lstsize(*stack_a) < 6)
