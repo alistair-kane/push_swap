@@ -32,7 +32,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME) checker
-	$(MAKE) clean -C $(LIB_LOC)
+	$(MAKE) fclean -C $(LIB_LOC)
 
 re:	fclean all
 
