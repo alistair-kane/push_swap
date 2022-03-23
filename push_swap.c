@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/03/22 22:49:22 by alistair         ###   ########.fr       */
+/*   Updated: 2022/03/23 12:58:31 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static int	return_error(void)
 
 void	delete_list(t_list *head_ref)
 {
-	t_list *next;
-	
+	t_list	*next;
+
 	if (head_ref == NULL)
 		return ;
 	while (head_ref)

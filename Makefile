@@ -28,9 +28,11 @@ bonus: $(BONUS_OBJS) $(LIBRARY)
 
 clean:
 	rm -f $(OBJS) $(BONUS_OBJS)
+	$(MAKE) clean -C $(LIB_LOC)
 
 fclean: clean
 	rm -f $(NAME) checker
+	$(MAKE) clean -C $(LIB_LOC)
 
 re:	fclean all
 
