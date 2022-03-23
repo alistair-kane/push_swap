@@ -19,12 +19,10 @@ $(LIBRARY):
 	$(MAKE) -C $(LIB_LOC)
 
 $(NAME): $(OBJS) $(LIBRARY)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L $(LIB_LOC) -lft
-	rm -f $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L $(LIB_LOC) -lft
 
 bonus: $(BONUS_OBJS) $(LIBRARY)
 	$(CC) $(CFLAGS) -o checker $(BONUS_OBJS) -L $(LIB_LOC) -lft
-	rm -f $(BONUS_OBJS)
 
 clean:
 	rm -f $(OBJS) $(BONUS_OBJS)
