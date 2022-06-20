@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/03/23 12:58:31 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/20 01:20:23 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	solve_upper(t_list **stack_a, t_list **stack_b, t_state *state)
 				push_to_b(stack_a, stack_b, state);
 		}
 	}
-	end_correction(stack_a, stack_b, state);
+	end_correction(stack_a, state);
 }
 
 void	solve_lower(t_list **stack_a, t_list **stack_b, t_state *state)

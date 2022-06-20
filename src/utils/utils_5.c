@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_5.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:41:02 by alistair          #+#    #+#             */
-/*   Updated: 2022/03/23 13:42:27 by alkane           ###   ########.fr       */
+/*   Updated: 2022/06/20 01:58:53 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,33 +49,16 @@ void	push_to_b(t_list **stack_a, t_list **stack_b, t_state *state)
 
 int	push_to_a(t_list **stack_a, t_list **stack_b, t_state *state)
 {
-	int	lowest_val;
-	int	val;
-	int	unshared;
-	int	i;
-
-	i = -1;
-	lowest_val = -1;
-	while (get_nth_idx(*stack_b, ++i) != -1)
-	{
-		val = get_nth_idx(*stack_b, i);
-		insert_pos(val, stack_a, stack_b, state);
-		unshared = min(state->a_moves, ft_lstsize(*stack_a) - state->a_moves) \
-			+ min(state->b_moves, ft_lstsize(*stack_b) - state->b_moves);
-		if (unshared < 1)
-		{
-			lowest_val = val;
-			break ;
-		}
-	}
-	if (lowest_val != -1)
+	insert_pos(get_nth_idx(*stack_b, 0), stack_a, state);
+	if (state->a_moves == 0)
 		return (push_a(stack_a, stack_b, 0));
 	return (0);
 }
 
-void	end_correction(t_list **stack_a, t_list **stack_b, t_state *state)
+void	end_correction(t_list **stack_a, t_state *state)
 {
-	insert_pos(-1, stack_a, stack_b, state);
+	max_run(stack_a, state);
+	insert_pos(-1, stack_a, state);
 	while (get_nth_idx(*stack_a, 0) != 0)
 	{
 		if ((ft_lstsize(*stack_a) - state->a_moves) > state->a_moves)

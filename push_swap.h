@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/03/22 22:53:46 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/20 01:20:29 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int		forward_shared(int a_rotate, int b_rotate);
 int		reverse_shared(int a_reverse, int b_reverse);
 int		min(int x, int y);
 int		max_run(t_list **head, t_state *state);
-void	insert_pos(int val, t_list **stack_a, t_list **stack_b, t_state *state);
+void	insert_pos(int val, t_list **stack_a, t_state *state);
 void	delete_list(t_list *head_ref);
 
 void	a_moves(int a_rotate, int a_reverse, t_list **stack_a);
@@ -68,6 +68,6 @@ int		find_bin(int val, t_list **stack_b);
 
 void	push_to_b(t_list **stack_a, t_list **stack_b, t_state *state);
 int		push_to_a(t_list **stack_a, t_list **stack_b, t_state *state);
-void	end_correction(t_list **stack_a, t_list **stack_b, t_state *state);
+void	end_correction(t_list **stack_a, t_state *state);
 
 #endif

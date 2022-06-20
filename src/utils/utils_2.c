@@ -6,7 +6,7 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:33:48 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 06:40:00 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/20 01:47:38 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,21 +83,12 @@ static int	slot_in_run(int val, t_list **stack_a, t_state *state)
 	return (i);
 }
 
-void	insert_pos(int val, t_list **stack_a, t_list **stack_b, t_state *state)
+void	insert_pos(int val, t_list **stack_a, t_state *state)
 {
-	int	moves;
-	int	i;
-
-	max_run(stack_a, state);
 	if (val < get_nth_idx(*stack_a, state->run_start))
-		moves = state->run_start;
+		state->a_moves = state->run_start;
 	else if (val > get_nth_idx(*stack_a, state->run_end))
-		moves = state->run_end;
+		state->a_moves = state->run_end;
 	else
-		moves = slot_in_run(val, stack_a, state);
-	state->a_moves = moves;
-	i = 0;
-	while (get_nth_idx(*stack_b, i) != val)
-		i++;
-	state->b_moves = i;
+		state->a_moves = slot_in_run(val, stack_a, state);
 }
