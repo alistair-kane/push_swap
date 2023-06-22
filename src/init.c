@@ -6,31 +6,36 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:43:28 by alistair          #+#    #+#             */
-/*   Updated: 2022/03/23 13:20:43 by alkane           ###   ########.fr       */
+/*   Updated: 2023/06/23 06:22:33 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../push_swap.h"
 
-static int	count_dup(t_list *head_ref)
+static int	count_dup(int *intarray)
 {
-	int		count;
-	t_list	*ptr;
+	int	count;
+	int	size;
+	int	i;
+	int j;
 
+	size = sizeof(intarray) / sizeof(intarray[0]);
 	count = 0;
-	while (head_ref -> next != NULL)
+	i = 0;
+	j = 0;
+	while (i < size)
 	{
-		ptr = head_ref -> next;
-		while (ptr != NULL)
+		j = i + 1;
+		while (j < size)
 		{
-			if (head_ref -> content == ptr -> content)
+			if (intarray[i] == intarray[j])
 			{
 				count++;
 				break ;
 			}
-			ptr = ptr -> next;
+			j++;
 		}
-		head_ref = head_ref -> next;
+		i++;
 	}
 	return (count);
 }
@@ -42,13 +47,14 @@ static void	*return_free(t_list **stack_a)
 	return (NULL);
 }
 
-t_list	**list_builder(int argc, char **argv)
+int	*list_builder(int argc, char **argv)
 {
-	t_list	**stack_a;
+	int	*stack_a;
 	int		i;
 	long	val;
-
-	stack_a = malloc(sizeof(t_list));
+	
+	// !!!!!!
+	stack_a = malloc(argc - 1 * sizeof(int));
 	i = 1;
 	while (i < argc)
 	{
@@ -57,14 +63,15 @@ t_list	**list_builder(int argc, char **argv)
 			return (return_free(stack_a));
 		else
 		{
-			if (i++ == 1)
-				*stack_a = ft_lstnew(val);
-			else
-			{
-				ft_lstadd_back(stack_a, ft_lstnew(val));
-				if (count_dup(*stack_a))
-					return (return_free(stack_a));
-			}
+			// if (i++ == 1)
+			// 	*stack_a = ft_lstnew(val);
+			// else
+			// {
+			stack_a[i - 1] = val;
+				// ft_lstadd_back(stack_a, ft_lstnew(val));
+			if (count_dup(*stack_a))
+				return (return_free(stack_a));
+		// }
 		}
 	}
 	return (stack_a);

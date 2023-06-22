@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   utils_3.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:37:44 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 07:44:14 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/21 15:17:07 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../push_swap.h"
 
+// returns the __position__ of the highest value in the stack 
 int	max_idx(int len, t_list **head)
 {
 	int	i;
@@ -45,6 +46,8 @@ int	find_bin(int val, t_list **stack_b)
 	j = 0;
 	while (j < len)
 	{
+		// if the value we are testing is larger than the current value this is the index
+		// to be selected
 		if (val > get_nth_idx(*stack_b, i))
 			return (i);
 		j++;
@@ -55,6 +58,7 @@ int	find_bin(int val, t_list **stack_b)
 	return (max_idx(len, stack_b));
 }
 
+// aligns the two stacks in the lowest moves possible 
 void	move_lowest(int lowest, t_list **stack_a, t_list **stack_b)
 {
 	int	a_rotate;
@@ -70,15 +74,14 @@ void	move_lowest(int lowest, t_list **stack_a, t_list **stack_b)
 	a_reverse = ft_lstsize(*stack_a) - a_rotate;
 	b_reverse = ft_lstsize(*stack_b) - b_rotate;
 	unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
-	if (unshared < forward_shared(a_rotate, b_rotate) && unshared
-		< reverse_shared(a_reverse, b_reverse))
+
+	if (unshared < forward_shared(a_rotate, b_rotate) && unshared < reverse_shared(a_reverse, b_reverse))
 	{
 		a_moves(a_rotate, a_reverse, stack_a);
 		b_moves(b_rotate, b_reverse, stack_b);
 		push_b(stack_a, stack_b, 0);
 	}
-	else if (forward_shared(a_rotate, b_rotate)
-		< reverse_shared(a_reverse, b_reverse))
+	else if (forward_shared(a_rotate, b_rotate) < reverse_shared(a_reverse, b_reverse))
 		fwd_rotates(a_rotate, b_rotate, stack_a, stack_b);
 	else
 		rev_rotates(a_reverse, b_reverse, stack_a, stack_b);

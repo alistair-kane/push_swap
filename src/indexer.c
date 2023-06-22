@@ -6,7 +6,7 @@
 /*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:25:45 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 20:46:04 by alkane           ###   ########.fr       */
+/*   Updated: 2023/06/23 06:38:22 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,29 +78,48 @@ static	t_list	*copy(t_list *head)
 	return (new_list);
 }
 
-void	indexer(t_list *stack_a)
+void	indexer(int *stack_a)
 {
-	t_list	*sorted;
-	t_list	*next;
+	// int	*sorted;
+	// t_list	*next;
 	int		i;
-
-	sorted = copy(stack_a);
-	bubble_sort(sorted);
-	while (stack_a != NULL)
+	int 	j;
+	int size;
+	// sorted = copy(stack_a);
+	// stack_a = stack_a;
+	// bubble_sort(stack_a);
+	i = 0;
+	size = sizeof(stack_a) / sizeof(stack_a[0]);
+	while (i < size)
 	{
-		i = 1;
-		while (i < ft_lstsize(sorted))
+		j = 0;
+		while (j < size)
 		{
-			if (stack_a->content == get_nth(sorted, i))
-				stack_a->index = i;
-			i++;
+			if (stack_a[j] == i)
+			{
+				stack_a[j] = j;
+				break;				
+			}
+			j++;
 		}
-		stack_a = stack_a->next;
+		i++;
 	}
-	while (sorted)
-	{
-		next = sorted->next;
-		free(sorted);
-		sorted = next;
-	}
+
+	// while (stack_a != NULL)
+	// {
+	// 	i = 1;
+	// 	while (i < ft_lstsize(sorted))
+	// 	{
+	// 		if (stack_a->content == get_nth(sorted, i))
+	// 			stack_a->index = i;
+	// 		i++;
+	// 	}
+	// 	stack_a = stack_a->next;
+	// }
+	// while (sorted)
+	// {
+	// 	next = sorted->next;
+	// 	free(sorted);
+	// 	sorted = next;
+	// }
 }

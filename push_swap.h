@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/23 17:04:29 by alkane            #+#    #+#             */
-/*   Updated: 2022/06/20 01:20:29 by alistair         ###   ########.fr       */
+/*   Updated: 2023/06/23 06:39:25 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef struct s_state
 	int	lowest_val;
 }	t_state;
 
-t_list	**list_builder(int argc, char **argv);
+int	*list_builder(int argc, char **argv);
 
 void	swap_a(t_list **head_a, int supress);
 void	swap_b(t_list **head_b, int supress);
@@ -46,7 +46,7 @@ void	sort_three(t_list **stack_a);
 void	sort_four(t_list **stack_a, t_list **stack_b);
 void	sort_five(t_list **stack_a, t_list **stack_b);
 
-void	indexer(t_list *stack_a);
+void	indexer(int *stack_a);
 int		get_nth(t_list *head, int index);
 int		get_nth_idx(t_list *head, int index);
 int		forward_shared(int a_rotate, int b_rotate);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/20 01:20:23 by alistair         ###   ########.fr       */
+/*   Updated: 2023/06/23 06:40:38 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	solve_upper(t_list **stack_a, t_list **stack_b, t_state *state)
 	end_correction(stack_a, state);
 }
 
-void	solve_lower(t_list **stack_a, t_list **stack_b, t_state *state)
+void	solve_lower(int *stack_a, int *stack_b, t_state *state)
 {
 	int		len;
 
@@ -81,19 +81,19 @@ void	solve_lower(t_list **stack_a, t_list **stack_b, t_state *state)
 
 int	main(int argc, char **argv)
 {
-	t_list	**stack_a;
-	t_list	**stack_b;
+	int	*stack_a;
+	int	*stack_b;
 	t_state	*state;
-
+	int size = argc - 1;
 	if (argc <= 1)
 		return (0);
 	stack_a = list_builder(argc, argv);
 	if (!stack_a)
 		return (return_error());
-	stack_b = ft_calloc(1, sizeof(t_list));
+	stack_b = malloc(size * sizeof(int));
 	indexer(*stack_a);
 	state = malloc(sizeof(t_state));
-	if (ft_lstsize(*stack_a) < 6)
+	if (size < 6)
 		solve_lower(stack_a, stack_b, state);
 	else
 		solve_upper(stack_a, stack_b, state);

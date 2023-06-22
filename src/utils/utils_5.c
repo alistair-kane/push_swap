@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_5.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:41:02 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/20 01:58:53 by alistair         ###   ########.fr       */
+/*   Updated: 2022/06/21 15:14:53 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,13 @@ void	push_to_b(t_list **stack_a, t_list **stack_b, t_state *state)
 		unshared = min(i, ft_lstsize(*stack_a) - i) \
 			+ min(find_bin(state->val_holder, stack_b), ft_lstsize(*stack_b) \
 			- find_bin(state->val_holder, stack_b));
+		// if i is not after the run start and i is not below the run end
 		if (!(i >= state->run_start && i <= state->run_end))
 			find_lowest(unshared, \
 				forward_shared(i, find_bin(state->val_holder, stack_b)), \
-				reverse_shared(ft_lstsize(*stack_a) - i, ft_lstsize(*stack_b) \
-				- find_bin(state->val_holder, stack_b)), state);
+				reverse_shared(ft_lstsize(*stack_a) - i, \
+				ft_lstsize(*stack_b) - find_bin(state->val_holder, stack_b)), \
+				state);
 	}
 	move_lowest(state->lowest_val, stack_a, stack_b);
 }

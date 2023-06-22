@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
+/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:33:48 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/20 01:47:38 by alistair         ###   ########.fr       */
+/*   Updated: 2023/06/23 06:42:10 by alkane           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static void	count_consec(t_list **head, t_state *state, int len)
 	}
 }
 
-int	max_run(t_list **head, t_state *state)
+int	max_run(int *head, t_state *state)
 {
 	int	len;
 
