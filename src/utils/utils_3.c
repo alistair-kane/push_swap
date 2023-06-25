@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   utils_3.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:37:44 by alistair          #+#    #+#             */
-/*   Updated: 2022/06/21 15:17:07 by alkane           ###   ########.fr       */
+/*   Updated: 2023/06/23 15:29:28 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../push_swap.h"
 
 // returns the __position__ of the highest value in the stack 
-int	max_idx(int len, t_list **head)
+int	max_idx(int len, int *head)
 {
 	int	i;
 	int	max_val;
@@ -23,9 +23,9 @@ int	max_idx(int len, t_list **head)
 	max_val = 0;
 	while (i < len)
 	{
-		if (get_nth_idx(*head, i) > max_val)
+		if (head[i] > max_val)
 		{
-			max_val = get_nth_idx(*head, i);
+			max_val = head[i];
 			max_idx = i;
 		}
 		i++;
@@ -33,13 +33,13 @@ int	max_idx(int len, t_list **head)
 	return (max_idx);
 }
 
-int	find_bin(int val, t_list **stack_b)
+int	find_bin(int val, int *stack_b)
 {
 	int	len;
 	int	i;
 	int	j;
 
-	len = ft_lstsize(*stack_b);
+	len = lstsize(stack_b);
 	if (len == 0 || len == 1)
 		return (0);
 	i = max_idx(len, stack_b);
@@ -48,7 +48,7 @@ int	find_bin(int val, t_list **stack_b)
 	{
 		// if the value we are testing is larger than the current value this is the index
 		// to be selected
-		if (val > get_nth_idx(*stack_b, i))
+		if (val > stack_b[i])
 			return (i);
 		j++;
 		i++;
@@ -59,7 +59,7 @@ int	find_bin(int val, t_list **stack_b)
 }
 
 // aligns the two stacks in the lowest moves possible 
-void	move_lowest(int lowest, t_list **stack_a, t_list **stack_b)
+void	move_lowest(int lowest, int *stack_a, int *stack_b)
 {
 	int	a_rotate;
 	int	a_reverse;
@@ -68,11 +68,11 @@ void	move_lowest(int lowest, t_list **stack_a, t_list **stack_b)
 	int	unshared;
 
 	a_rotate = 0;
-	while (lowest != get_nth_idx(*stack_a, a_rotate))
+	while (lowest != stack_a[a_rotate])
 		a_rotate++;
 	b_rotate = find_bin(lowest, stack_b);
-	a_reverse = ft_lstsize(*stack_a) - a_rotate;
-	b_reverse = ft_lstsize(*stack_b) - b_rotate;
+	a_reverse = lstsize(stack_a) - a_rotate;
+	b_reverse = lstsize(stack_b) - b_rotate;
 	unshared = min(a_rotate, a_reverse) + min(b_rotate, b_reverse);
 
 	if (unshared < forward_shared(a_rotate, b_rotate) && unshared < reverse_shared(a_reverse, b_reverse))

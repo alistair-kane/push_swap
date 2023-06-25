@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checker.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/20 19:46:12 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 22:01:08 by alkane           ###   ########.fr       */
+/*   Updated: 2023/06/24 19:46:16 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	delete_list(t_list *head_ref)
 	free(head_ref);
 }
 
-int	apply_instructions(char *command, t_list **stack_a, t_list **stack_b)
+int	apply_instructions(char *command, int *stack_a, int *stack_b)
 {
 	if (!ft_strncmp("pb\n", command, 3))
 		push_b(stack_a, stack_b, 1);

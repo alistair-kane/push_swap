@@ -6,13 +6,13 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:39:15 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 07:44:44 by alistair         ###   ########.fr       */
+/*   Updated: 2023/06/23 15:06:35 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../push_swap.h"
 
-void	a_moves(int a_rotate, int a_reverse, t_list **stack_a)
+void	a_moves(int a_rotate, int a_reverse, int *stack_a)
 {
 	if (a_reverse < a_rotate)
 	{	
@@ -26,7 +26,7 @@ void	a_moves(int a_rotate, int a_reverse, t_list **stack_a)
 	}
 }
 
-void	b_moves(int b_rotate, int b_reverse, t_list **stack_b)
+void	b_moves(int b_rotate, int b_reverse, int *stack_b)
 {
 	if (b_reverse < b_rotate)
 	{	
@@ -40,7 +40,7 @@ void	b_moves(int b_rotate, int b_reverse, t_list **stack_b)
 	}
 }
 
-void	fwd_rotates(int a, int b, t_list **stack_a, t_list **stack_b)
+void	fwd_rotates(int a, int b, int *stack_a, int *stack_b)
 {
 	while (a && b)
 	{
@@ -55,7 +55,7 @@ void	fwd_rotates(int a, int b, t_list **stack_a, t_list **stack_b)
 	push_b(stack_a, stack_b, 0);
 }
 
-void	rev_rotates(int a, int b, t_list **stack_a, t_list **stack_b)
+void	rev_rotates(int a, int b, int *stack_a, int *stack_b)
 {
 	while (a && b)
 	{

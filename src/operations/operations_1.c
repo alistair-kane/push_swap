@@ -6,53 +6,45 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:03:38 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/21 06:11:57 by alistair         ###   ########.fr       */
+/*   Updated: 2023/06/25 18:40:08 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../push_swap.h"
 
-void	swap_a(t_list **head_a, int supress)
+void	swap_a(int *arr, int supress)
 {
-	t_list	*temp;
-	int		val_holder;
-	int		indx_holder;
+	int	temp;
+	int i = 0;
 
-	temp = *head_a;
-	if (temp != NULL && temp->next != NULL)
-	{
-		val_holder = temp->content;
-		indx_holder = temp->index;
-		temp->content = temp->next->content;
-		temp->index = temp->next->index;
-		temp->next->content = val_holder;
-		temp->next->index = indx_holder;
-		if (!supress)
-			write(1, "sa\n", 3);
-	}
+	if (arr[0] == -1 || arr[1] == -1)
+		return ;	
+	while (arr[i] != -1)
+		i++;
+	temp = arr[i - 1];
+	arr[i - 1] = arr[i - 2];
+	arr[i - 2] = temp;
+	if (!supress)
+		write(1, "sa\n", 3);
 }
 
-void	swap_b(t_list **head_b, int supress)
+void	swap_b(int *arr, int supress)
 {
-	t_list	*temp;
-	int		val_holder;
-	int		indx_holder;
+	int	temp;
+	int i = 0;
 
-	temp = *head_b;
-	if (temp != NULL && temp->next != NULL)
-	{
-		val_holder = temp->content;
-		indx_holder = temp->index;
-		temp->content = temp->next->content;
-		temp->index = temp->next->index;
-		temp->next->content = val_holder;
-		temp->next->index = indx_holder;
-		if (!supress)
-			write(1, "sb\n", 3);
-	}
+	if (arr[0] == -1 || arr[1] == -1)
+		return ;	
+	while (arr[i] != -1)
+		i++;
+	temp = arr[i - 1];
+	arr[i - 1] = arr[i - 2];
+	arr[i - 2] = temp;
+	if (!supress)
+		write(1, "sb\n", 3);
 }
 
-void	double_swap(t_list **head_a, t_list **head_b, int supress)
+void	double_swap(int *head_a, int *head_b, int supress)
 {
 	swap_a(head_a, 1);
 	swap_b(head_b, 1);
@@ -60,31 +52,47 @@ void	double_swap(t_list **head_a, t_list **head_b, int supress)
 		write(1, "ss\n", 3);
 }
 
-int	push_a(t_list **head_a, t_list **head_b, int supress)
+int	push_a(int *head_a, int *head_b, int supress)
 {
-	t_list	*new_node;
+	int new_node;
+	int i;
 
-	if (*head_b == NULL)
+	if (head_b[0] == -1)
 		return (0);
-	new_node = *head_b;
-	*head_b = (*head_b)->next;
-	new_node->next = *head_a;
-	*head_a = new_node;
+	i = 0;
+	while (head_b[i] != -1)
+		i++;
+	new_node = head_b[i - 1]; // should be last element in array, not first
+	// last element is taken so should be replaced with -1
+	head_b[i - 1] = -1;
+	// now go to the end of stack b to place it in the right place there
+	i = 0;
+	while (head_a[i] != -1)
+		i++;
+	head_a[i] = new_node;
 	if (!supress)
 		write(1, "pa\n", 3);
 	return (1);
 }
 
-int	push_b(t_list **head_a, t_list **head_b, int supress)
+int	push_b(int *head_a, int *head_b, int supress)
 {
-	t_list	*new_node;
+	int new_node;
+	int i;
 
-	if (*head_a == NULL)
-		return (0);
-	new_node = *head_a;
-	*head_a = (*head_a)->next;
-	new_node->next = *head_b;
-	*head_b = new_node;
+	if (head_a[0] == -1)
+		return (0);	
+	i = 0;
+	while (head_a[i] != -1)
+		i++;
+	new_node = head_a[i - 1]; // should be last element in array, not first
+	// last element is taken so should be replaced with -1
+	head_a[i - 1] = -1;
+	// now go to the end of stack b to place it in the right place there
+	i = 0;
+	while (head_b[i] != -1)
+		i++;
+	head_b[i] = new_node;
 	if (!supress)
 		write(1, "pb\n", 3);
 	return (1);

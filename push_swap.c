@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   push_swap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/13 15:09:53 by alistair          #+#    #+#             */
-/*   Updated: 2023/06/23 06:40:38 by alkane           ###   ########.fr       */
+/*   Updated: 2023/06/25 18:39:53 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,41 +18,26 @@ static int	return_error(void)
 	return (0);
 }
 
-void	delete_list(t_list *head_ref)
+void	solve_upper(int *stack_a, int *stack_b, t_state *state)
 {
-	t_list	*next;
-
-	if (head_ref == NULL)
-		return ;
-	while (head_ref)
+	while ((max_run(stack_a, state) < lstsize(stack_a)) \
+		|| lstsize(stack_b))
 	{
-		next = head_ref->next;
-		free(head_ref);
-		head_ref = next;
-	}
-	free(head_ref);
-}
-
-void	solve_upper(t_list **stack_a, t_list **stack_b, t_state *state)
-{
-	while ((max_run(stack_a, state) < ft_lstsize(*stack_a)) \
-		|| ft_lstsize(*stack_b))
-	{
-		if (ft_lstsize(*stack_b) && push_to_a(stack_a, stack_b, state))
+		if (lstsize(stack_b) && push_to_a(stack_a, stack_b, state))
 			continue ;
-		if ((ft_lstsize(*stack_a) == max_run(stack_a, state) \
-			&& ft_lstsize(*stack_b)) || state->run_start == 0)
+		if ((lstsize(stack_a) == max_run(stack_a, state) \
+			&& lstsize(stack_b)) || state->run_start == 0)
 			reverse_rotate_a(stack_a, 0);
 		else if (state->run_end < state->len)
 		{
-			if (state->run_end > (ft_lstsize(*stack_a) - state->run_start))
+			if (state->run_end > (lstsize(stack_a) - state->run_start))
 				reverse_rotate_a(stack_a, 0);
 			else
 				rotate_a(stack_a, 0);
 		}
-		else if (ft_lstsize(*stack_a) > 2)
+		else if (lstsize(stack_a) > 2)
 		{
-			if ((*stack_a)->index - (*stack_a)->next->next->index == -1)
+			if (stack_a[0] - stack_a[2] == -1)
 				swap_a(stack_a, 0);
 			else
 				push_to_b(stack_a, stack_b, state);
@@ -63,13 +48,15 @@ void	solve_upper(t_list **stack_a, t_list **stack_b, t_state *state)
 
 void	solve_lower(int *stack_a, int *stack_b, t_state *state)
 {
-	int		len;
+	int len;
 
+	len = lstsize(stack_a);
+	printf("solve lower len:[%d]\n", len);
+	// len = state->array_a_len;
 	max_run(stack_a, state);
-	len = ft_lstsize(*stack_a);
-	if (state->len == len && get_lowest(*stack_a) == get_nth_idx(*stack_a, 0))
+	if (state->len == len && stack_a[0] == 0)
 		return ;
-	else if (len == 2 && get_nth_idx(*stack_a, 0) > get_nth_idx(*stack_a, 1))
+	else if (len == 2 && stack_a[0] > stack_a[1])
 		swap_a(stack_a, 0);
 	else if (len == 3)
 		sort_three(stack_a);
@@ -79,29 +66,47 @@ void	solve_lower(int *stack_a, int *stack_b, t_state *state)
 		sort_five(stack_a, stack_b);
 }
 
+void fill_arrays(int *stack_a, int *stack_b)
+{
+	int	i;
+
+	i = 0;
+	while (i < MAX_ARR_SIZE)
+	{
+		stack_a[i] = -1;
+		stack_b[i] = -1;
+		i++;
+	}
+}
+
 int	main(int argc, char **argv)
 {
-	int	*stack_a;
-	int	*stack_b;
+	int	stack_a[MAX_ARR_SIZE];
+	int	stack_b[MAX_ARR_SIZE];
 	t_state	*state;
 	int size = argc - 1;
 	if (argc <= 1)
 		return (0);
-	stack_a = list_builder(argc, argv);
-	if (!stack_a)
+		
+	fill_arrays(stack_a, stack_b);
+	if(list_builder(stack_a, argc, argv))
 		return (return_error());
-	stack_b = malloc(size * sizeof(int));
-	indexer(*stack_a);
+	// if (!stack_a)
+	// printf("here?\n");
+	// stack_b = ft_calloc(size, sizeof(int));
+	indexer(stack_a);
+
 	state = malloc(sizeof(t_state));
+	// state->array_a_len = size;
 	if (size < 6)
 		solve_lower(stack_a, stack_b, state);
 	else
 		solve_upper(stack_a, stack_b, state);
-	delete_list(*stack_a);
-	delete_list(*stack_b);
+	// delete_list(stack_a);
+	// delete_list(stack_b);
 	free(state);
-	free(stack_a);
-	free(stack_b);
+	// free(stack_a);
+	// free(stack_b);
 	return (0);
 }
 

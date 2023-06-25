@@ -6,45 +6,45 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:30:58 by alistair          #+#    #+#             */
-/*   Updated: 2022/02/20 06:40:13 by alistair         ###   ########.fr       */
+/*   Updated: 2023/06/24 12:35:46 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../push_swap.h"
 
-int	get_nth(t_list *head, int index)
-{
-	t_list	*current;
-	int		count;
+// int	get_nth(t_list *head, int index)
+// {
+// 	t_list	*current;
+// 	int		count;
 
-	current = head;
-	count = 0;
-	while (current != NULL)
-	{
-		if (count == index)
-			return (current->content);
-		count++;
-		current = current->next;
-	}
-	return (-1);
-}
+// 	current = head;
+// 	count = 0;
+// 	while (current != NULL)
+// 	{
+// 		if (count == index)
+// 			return (current->content);
+// 		count++;
+// 		current = current->next;
+// 	}
+// 	return (-1);
+// }
 
-int	get_nth_idx(t_list *head, int index)
-{
-	t_list	*current;
-	int		count;
+// int	get_nth_idx(t_list *head, int index)
+// {
+// 	t_list	*current;
+// 	int		count;
 
-	current = head;
-	count = 0;
-	while (current != NULL)
-	{
-		if (count == index)
-			return (current->index);
-		count++;
-		current = current->next;
-	}
-	return (-1);
-}
+// 	current = head;
+// 	count = 0;
+// 	while (current != NULL)
+// 	{
+// 		if (count == index)
+// 			return (current->index);
+// 		count++;
+// 		current = current->next;
+// 	}
+// 	return (-1);
+// }
 
 int	forward_shared(int a_rotate, int b_rotate)
 {

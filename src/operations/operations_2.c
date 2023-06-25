@@ -6,49 +6,55 @@
 /*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/15 16:49:34 by alkane            #+#    #+#             */
-/*   Updated: 2022/03/22 00:55:15 by alistair         ###   ########.fr       */
+/*   Updated: 2023/06/25 18:27:02 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../push_swap.h"
 
-void	rotate_a(t_list **head_a, int supress)
+void	rotate_a(int *arr, int supress)
 {
-	t_list	*last;
-	t_list	*second;
+	int i;
 
-	if (!*head_a || !(*head_a)->next)
-		return ;
-	last = *head_a;
-	second = (*head_a)->next;
-	while (last->next != NULL)
-		last = last->next;
-	(*head_a)->next = NULL;
-	last->next = *head_a;
-	*head_a = second;
+	i = 0;
+	while (arr[i] != -1)
+		i++;
+	if (i <= 1)
+        return;
+    int last = arr[i - 1];
+	i -= 1;
+	while(i > 0)
+	{
+		arr[i] = arr[i - 1];
+		i--;
+	}
+    arr[0] = last;
 	if (!supress)
 		write(1, "ra\n", 3);
 }
 
-void	rotate_b(t_list **head_b, int supress)
+void	rotate_b(int *arr, int supress)
 {
-	t_list	*last;
-	t_list	*second;
+	int i;
 
-	if (!*head_b || !(*head_b)->next)
-		return ;
-	last = *head_b;
-	second = (*head_b)->next;
-	while (last->next != NULL)
-		last = last->next;
-	(*head_b)->next = NULL;
-	last->next = *head_b;
-	*head_b = second;
+	i = 0;
+	while (arr[i] != -1)
+		i++;
+	if (i <= 1)
+        return;
+    int last = arr[i - 1];
+	i -= 1;
+	while(i > 0)
+	{
+		arr[i] = arr[i - 1];
+		i--;
+	}
+    arr[0] = last;
 	if (!supress)
 		write(1, "rb\n", 3);
 }
 
-void	double_rotate(t_list **head_a, t_list **head_b, int supress)
+void	double_rotate(int *head_a, int *head_b, int supress)
 {
 	rotate_a(head_a, 1);
 	rotate_b(head_b, 1);

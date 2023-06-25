@@ -1,6 +1,6 @@
 NAME	= push_swap
 CC		= gcc
-CFLAGS	= -Wall -Werror -Wextra
+CFLAGS	= -Wall -Werror -Wextra -g
 LIB_LOC = ./libft
 LIBRARY = libft.a
 SRCS	= push_swap.c src/indexer.c src/init.c src/lower_sort.c src/utils/utils_1.c \

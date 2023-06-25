@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alkane <alkane@student.42.fr>              +#+  +:+       +#+        */
+/*   By: alistair <alistair@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/20 05:33:48 by alistair          #+#    #+#             */
-/*   Updated: 2023/06/23 06:42:10 by alkane           ###   ########.fr       */
+/*   Updated: 2023/06/23 20:03:41 by alistair         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	reset_temp(int temp_len, int i, t_state *state)
 	return (temp_len);
 }
 
-static void	count_consec(t_list **head, t_state *state, int len)
+static void	count_consec(int *head, t_state *state, int len)
 {
 	int	i;
 	int	j;
@@ -38,7 +38,8 @@ static void	count_consec(t_list **head, t_state *state, int len)
 	state->len = 1;
 	while (++i < (len * 2))
 	{
-		if (get_nth_idx(*head, j++) < get_nth_idx(*head, k++))
+		// printf("compared vals: %d | %d \n", head[j], head[k]);
+		if (head[j++] < head[k++])
 			temp_len++;
 		else
 			temp_len = reset_temp(temp_len, i, state);
@@ -53,7 +54,7 @@ int	max_run(int *head, t_state *state)
 {
 	int	len;
 
-	len = ft_lstsize(*head);
+	len = lstsize(head);
 	count_consec(head, state, len);
 	if (state->run_end >= len)
 		state->run_end = state->run_end - len;
@@ -62,7 +63,7 @@ int	max_run(int *head, t_state *state)
 	return (state->len);
 }
 
-static int	slot_in_run(int val, t_list **stack_a, t_state *state)
+static int	slot_in_run(int val, int *stack_a, t_state *state)
 {
 	int	fits;
 	int	i;
@@ -72,22 +73,22 @@ static int	slot_in_run(int val, t_list **stack_a, t_state *state)
 	while (fits != 2)
 	{
 		fits = 0;
-		if (val > get_nth_idx(*stack_a, i))
+		if (val > stack_a[i])
 			fits++;
-		if (i == ft_lstsize(*stack_a))
+		if (i == lstsize(stack_a))
 			i = -1;
-		if (val < get_nth_idx(*stack_a, i + 1))
+		if (val < stack_a[i + 1])
 			fits++;
 		i++;
 	}
 	return (i);
 }
 
-void	insert_pos(int val, t_list **stack_a, t_state *state)
+void	insert_pos(int val, int *stack_a, t_state *state)
 {
-	if (val < get_nth_idx(*stack_a, state->run_start))
+	if (val < stack_a[state->run_start])
 		state->a_moves = state->run_start;
-	else if (val > get_nth_idx(*stack_a, state->run_end))
+	else if (val > stack_a[state->run_end])
 		state->a_moves = state->run_end;
 	else
 		state->a_moves = slot_in_run(val, stack_a, state);
